@@ -1,0 +1,189 @@
+.hidden{
+	display: none;
+}
+.fin_money{
+	margin-top: 20px;
+	border: 1px solid #cccccc;
+	border-radius: 5px;
+	font-family: Montserrat;
+}
+.fin_money .col-4{
+	text-align: center !important;
+	max-width: 33%;
+	padding-top: 20px;
+	padding-bottom: 18px;
+}
+.h-line{
+	height: 40px;
+	background: #cccccc;
+	width: 1px;
+	margin: 20px 0;
+}
+.fin_m_span1{
+	font-size: 16px;
+	font-weight: 600;
+}
+.fin_m_span2{
+	font-size: 11px;
+	color: #cccccc;
+	padding-left: 5px;
+}
+.statistic_month_head{
+	color: #cccccc;
+	font-size: 12px;
+	height: 60px;
+}
+.statistic_month_head_hr{
+	background: #cccccc;
+	width: 100%;
+	margin-bottom: 15px;
+}
+.statistic_month_head_1{
+	width: 670px;
+	padding-top: 20px;
+}
+.statistic_month_head_2{
+	width: 120px;
+	padding-top: 10px;
+}
+.statistic_month_head_3{
+	width: 100px;
+	padding-top: 10px;
+}
+.statistic_month_head_4{
+	width: 90px;
+	padding-top: 20px;
+}
+.statistic_month_head_2, .statistic_month_head_3, .statistic_month_head_4{
+	text-align: center;
+}
+.statistic_month_info_1{
+	width: 670px;
+}
+.statistic_month_info_2{
+	width: 120px;
+}
+.statistic_month_info_3{
+	width: 100px;
+}
+.statistic_month_info_4{
+	width: 90px;
+}
+.statistic_month_info_1, .statistic_month_info_2, .statistic_month_info_3, .statistic_month_info_4{
+	padding-bottom: 30px;
+}
+.statistic_month_info_2, .statistic_month_info_3, .statistic_month_info_4{
+	text-align: center;
+}
+.analitics_col_e{
+	height: 35px;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    justify-content: space-between;
+}
+.after_table_filters_e{
+	margin-top: 30px;
+    margin-bottom: 100px;
+    height: 25px;
+    width: 100%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+.comand_partner{
+	text-align: center;
+	padding-top: 20px;
+    padding-bottom: 18px;
+    margin-top: 20px;
+	border: 1px solid #cccccc;
+	border-radius: 5px;
+	font-family: Montserrat;
+}
+#chartdiv {
+  width: 100%;
+  height: 500px;
+/*   margin-top: 60px; */
+/*   margin-bottom: 100px; */
+/*   border-radius: 5px; */
+  background: #fff;
+}
+#chartdiv_comm {
+  width: 100%;
+  height: 500px;
+/*   margin-top: 60px; */
+/*   margin-bottom: 100px; */
+/*   border-radius: 5px; */
+  background: #fff;
+}
+.cd_s{
+	margin-top: 60px;
+	border-radius: 5px 5px 0 0;
+	height: 25px;
+	background: #fff;
+	width: 100%;
+}
+.cd_e{
+	margin-bottom: 100px;
+	border-radius: 0 0 5px 5px;
+	height: 25px;
+	background: #fff;
+	width: 100%;
+}
+.month_drop_list{
+	float: left;
+    font-size: 12px;
+    padding-left: 15px;
+    margin-left: -25px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;    
+}
+.month_drop_list img{
+	cursor: pointer;
+	margin-left: 28px;
+    margin-right: 10px;
+}
+.month_drop_list select{
+	border: none;
+	outline: none;
+	cursor: pointer;
+	background: #f2f2f2;
+}
+#chartdiv_week{
+  width: 100%;
+  height: 500px;
+/*   margin-top: 60px; */
+/*   margin-bottom: 100px; */
+/*   border-radius: 5px; */
+  background: #fff;
+}
+#chartdiv_month{
+  width: 100%;
+  height: 500px;
+/*   margin-top: 60px; */
+/*   margin-bottom: 100px; */
+/*   border-radius: 5px; */
+  background: #fff;
+}
+.cd_s_week, .cd_s_month{
+	margin-top: 60px;
+	border-radius: 5px 5px 0 0;
+	height: 25px;
+	background: #fff;
+	width: 100%;
+}
+.cd_e_week, .cd_e_month{
+	margin-bottom: 100px;
+	border-radius: 0 0 5px 5px;
+	height: 25px;
+	background: #fff;
+	width: 100%;
+}
