@@ -1,4 +1,5 @@
 <?php
+
 if (0 < $_FILES['file']['error'] ) {
 	echo 'Error';
 	exit();

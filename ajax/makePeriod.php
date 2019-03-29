@@ -17,4 +17,3 @@ function makePeriod($data) {
 		return $data;
 	}
 }
-

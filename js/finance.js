@@ -597,8 +597,6 @@ $(document).ready(function() {
 
 			chart.data = JSON.parse(res[3]);
 
-				
-
 			resortEarnTable();
 		});
 		
@@ -639,7 +637,7 @@ $(document).ready(function() {
 		if ($('.range_control').length != 2)
 			return;
 
-		$('.custom_date_change').attr('data-val', 'DATE(`date`) BETWEEN \''+$('.range_control').first().attr('data-date')+'\' AND \''+$('.range_control').last().attr('data-date')+'\'');
+		$('.custom_date_change').attr('data-val', 'DATE(`date`) BETWEEN '+$('.range_control').first().attr('data-date')+' AND '+$('.range_control').last().attr('data-date'));
 		$('.custom_date_change span').text($('.range_control').first().text() + ' ' + $('.range_control').first().parent().prev().prev().attr('data-month_name') + ' ' + $('.range_control').first().parent().prev().prev().attr('data-year') + ' – ' + $('.range_control').last().text() + ' ' + $('.range_control').last().parent().prev().prev().attr('data-month_name') + ' ' + $('.range_control').last().parent().prev().prev().attr('data-year'));
 
 		$('.calendar_overlay').hide();

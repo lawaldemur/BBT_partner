@@ -107,17 +107,17 @@ jQuery(document).ready(function($) {
 			} else if (result == 'session') {
 				// success
 				document.location.href = '/analitic.php';
-			} else if (result.split('|')[1] == 'cookie' || result.split('|')[1] == 'session') {
+			} else if (result.split('|')[0] == 'cookie' || result.split('|')[0] == 'session') {
 				// show documents
-				if (result.split('|')[1] == 'cookie') {
+				if (result.split('|')[0] == 'cookie') {
 					$('.partner_accept_form').attr({
 						'data-method': 'cookie',
-						'data-login': result.split('|')[0]+'|'+result.split('|')[2]+'|'+result.split('|')[3]
+						'data-login': result.split('|')[1]
 					});
 				} else {
 					$('.partner_accept_form').attr({
 						'data-method': 'session',
-						'data-login': result.split('|')[0]+'|'+result.split('|')[2]+'|'+result.split('|')[3]
+						'data-login': result.split('|')[1]
 					});
 				}
 				$('.partner_accept_form, #overlay_form').show();
@@ -792,6 +792,7 @@ jQuery(document).ready(function($) {
 				},
 			})
 			.done(function(res) {
+				console.log(res);
 				if (res == 'не авторизованный пользователь')
 					return;
 				if (res != 'session')
@@ -834,6 +835,7 @@ jQuery(document).ready(function($) {
 				},
 			})
 			.done(function(res) {
+				console.log(res);
 				if (res == 'не авторизованный пользователь')
 					return;
 				// change notification text

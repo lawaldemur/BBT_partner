@@ -2,7 +2,7 @@
 require '../db.php';
 
 $login = $_POST['login'];
-$password = str_replace('\'', '', $_POST['password']);
+$password = $_POST['password'];
 $remember = $_POST['remember'] == 'true'; # recieve true/false string
 
 
@@ -22,18 +22,18 @@ $logged = $level['logged'];
 if ($position == 'partner' && $logged == 0) {
 	if ($remember) {
 		// send result to js | cookie will set in js
-		echo $position.'|'.'cookie|'.$login.'|'.$id;
+		echo 'cookie|'.get_hash_password($id, $password);
 	} else {
 		// send result to js | session will set in js
-		echo $position.'|'.'session|'.$login.'|'.$id;
+		echo 'session|'.get_hash_password($id, $password);
 	}
 } else {
 	if ($remember) {
 		// send result to js | cookie will set in js
-		echo $position.'|'.$login.'|'.$id;
+		echo get_hash_password($id, $password);
 	} else {
 		session_start();
-		$_SESSION["logged"] = $position.'|'.$login.'|'.$id;
+		$_SESSION["logged"] = get_hash_password($id, $password);
 		// send result to js
 		echo 'session';
 	}

@@ -51,6 +51,11 @@ mail($email, 'Вы новый партнер в партнерской прог�
 // add partner to database
 $result = $dbc->query("INSERT INTO `users` (`login`, `password`, `position`, `code`, `parent`, `audio_percent`, `digital_percent`, `name`, `city`) VALUES ('$email', '$pass', 'partner', '$code', $parent, $get_audio, $get_digital, '$name', '$region')");
 
+$id = $dbc->query("SELECT * FROM `users` WHERE `login` = '$email' && `password` = '$pass'");
+$id = $id->fetch_array(MYSQLI_ASSOC)['id'];
+
+$result = $dbc->query("UPDATE `users` SET `auth` = '".get_hash_password($id, $pass)."' WHERE `login` = '$email' AND `password` = '$pass'");
+
 echo $result;
 
 mysqli_close($dbc);

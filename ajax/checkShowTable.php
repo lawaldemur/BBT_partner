@@ -1,4 +1,5 @@
 <?php
+
 if (strpos($_POST['period'], 'BETWEEN') !== false) {
 	$date2 = new DateTime(explode('\'', $_POST['period'])[1]);
 	$date1 = new DateTime(explode('\'', $_POST['period'])[3]);

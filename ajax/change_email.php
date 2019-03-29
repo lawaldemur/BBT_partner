@@ -2,13 +2,22 @@
 require '../db.php';
 session_start();
 
+$user = false;
 if (isset($_SESSION['logged']))
 	$user = $_SESSION['logged'];
 elseif (isset($_COOKIE['logged']))
 	$user = $_COOKIE['logged'];
-$user_id = explode('|', $user)[2];
+// transform hash to str
+if (!$user)
+	exit('не авторизованный пользователь');
+$user = str_replace(';', '', $dbc->real_escape_string($user));
+$user = $dbc->query("SELECT * FROM `users` WHERE `auth` = '$user'");
+if (!$user || $user->num_rows === 0)
+	exit('не авторизованный пользователь');
+$user = $user->fetch_array(MYSQLI_ASSOC);
+$user_id = $user['id'];
 
-if ($_POST['id'] != $user_id)
+if ($user_id != $_POST['id'])
 	exit('не авторизованный пользователь');
 
 $id = $_POST['id'];

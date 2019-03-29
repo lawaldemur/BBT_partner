@@ -13,7 +13,7 @@ $command_password = $_POST['command_password'];
 if (strlen($command_password) == substr_count($command_password, '#'))
 	echo $dbc->query("UPDATE `users` SET `login` = '$command_email', `audio_percent` = $get_audio, `digital_percent` = $get_digital, `name` = '$command_name', `city` = '$command_region' WHERE `id` = $command_id");
 else {
-	echo $dbc->query("UPDATE `users` SET `login` = '$command_email', `password` = '$command_password', `audio_percent` = $get_audio, `digital_percent` = $get_digital, `name` = '$command_name', `city` = '$command_region' WHERE `id` = $command_id");
+	echo $dbc->query("UPDATE `users` SET `login` = '$command_email', `password` = '$command_password', `audio_percent` = $get_audio, `digital_percent` = $get_digital, `name` = '$command_name', `city` = '$command_region', `auth` = '".get_hash_password($command_id, $command_password)."' WHERE `id` = $command_id");
 
 	// send email to command
 	$message = "<b><a href='http://partner.bbt-online.ru/'>Партнерская программа ББТ</a></b><br>".

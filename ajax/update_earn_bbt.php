@@ -1,7 +1,9 @@
 <?php
+// $_POST['period'] = str_replace('\'', '', $_POST['period']);
 include '../db.php';
 include 'makePeriod.php';
 $_POST['period'] = makePeriod($_POST['period']);
+
 
 if(isset($_POST['period'])){
 	$date = $_POST['period'];
