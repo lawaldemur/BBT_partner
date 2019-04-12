@@ -792,7 +792,6 @@ jQuery(document).ready(function($) {
 				},
 			})
 			.done(function(res) {
-				console.log(res);
 				if (res == 'не авторизованный пользователь')
 					return;
 				if (res != 'session')
@@ -835,7 +834,6 @@ jQuery(document).ready(function($) {
 				},
 			})
 			.done(function(res) {
-				console.log(res);
 				if (res == 'не авторизованный пользователь')
 					return;
 				// change notification text

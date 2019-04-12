@@ -5,7 +5,6 @@ $login = $_POST['login'];
 $password = $_POST['password'];
 $remember = $_POST['remember'] == 'true'; # recieve true/false string
 
-
 $exist = $dbc->query("SELECT * FROM `users` WHERE `login` = '$login' && `password` = '$password'");
 
 // if user not found then exit
