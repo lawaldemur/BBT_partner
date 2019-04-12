@@ -1,0 +1,1 @@
+<th class="<?=$class?>" data-column="<?=$data_col?>"><?=$text?></th>
