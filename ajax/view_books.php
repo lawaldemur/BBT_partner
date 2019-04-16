@@ -90,6 +90,15 @@ foreach ($books as $book) {
 		$book['other'] = $book['other']->fetch_array(MYSQLI_ASSOC)['meta_value'];
 		$book['other'] = $dbc_shop->query("SELECT * FROM `wp_terms` WHERE `slug` = '{$book['other']}'");
 		$book['other'] = $book['other']->fetch_array(MYSQLI_ASSOC)['name'];
+
+		if ($book['other'] == '') {
+			$other = $dbc->query("SELECT * FROM `analitic` WHERE `product` = {$book['product']}");
+			if ($other)
+				foreach ($other as $author) {
+					$book['other'] = $author['other'];
+					break;
+				}
+		}
 	}
 
 	$array[] = $book;
@@ -129,7 +138,7 @@ for ($i=$offset; $i < $limit && $i < count($array); $i++): ?>
 		<td><?=$array[$i]['price']?> &#8381;</td>
 		<td><?=$array[$i]['summ']?> &#8381;</td>
 		<?php if ($role == 'command' || $role == 'partner'): ?>
-			<td><?=$array[$i]['to_bbt']?> &#8381;</td>
+			<td><?=$array[$i]['to_'.$role]?> &#8381;</td>
 		<?php endif ?>
 	</tr>
 <?php endfor;

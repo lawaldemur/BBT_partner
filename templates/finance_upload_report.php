@@ -1,0 +1,1 @@
+<input type="file" class="finance_open_report_file" style="display: none;">

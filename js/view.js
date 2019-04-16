@@ -191,6 +191,9 @@ jQuery(document).ready(function($) {
 		var sortType = '';
 		if ($('.sort_date').hasClass('sort_active')) sortType = 'bydate';
 		else sortType = 'bybook';
+
+		uploadAllBooks();
+
 		if (sortType == 'bybook' && $('th[data-column="date"]').length == 1) {
 			$('th[data-column="date"]').remove();
 			$('th[data-column="name"]').append(' <span class="sort_down sortColumn_type">&#9660;</span>');
@@ -198,8 +201,6 @@ jQuery(document).ready(function($) {
 			$('.sortColumn_type').remove();
 			$('thead tr').prepend('<th class="books" data-column="date">Дата <span class="sort_upper sortColumn_type">&#9660;</span></th>');
 		}
-
-		uploadAllBooks();
 	});
 	// change sort column
 	$('thead th').click(function() {

@@ -1,0 +1,1 @@
+<div class="tab_2 tab" data-tab="about_view">О клиенте</div>

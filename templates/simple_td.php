@@ -1,1 +1,3 @@
-<td <?=$class ? 'class="'.$class.'"' : ''?>><?=$value?></td>
+<td <?=$class ? "class=\"$class\"" : ''?>
+	<?=$style ? "style=\"$style\"" : ''?>
+><?=$value?></td>

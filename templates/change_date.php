@@ -28,7 +28,7 @@
 
 </div>
 
-<?php // calendar body ?>
+
 <div class="calendar_overlay"></div>
 	<div class="calendar">
 	<div class="prev_cal"><img src="/img/back_calendar.svg" alt="back arrow"></div>
@@ -42,3 +42,15 @@
 	<div class="reset_cal">Сбросить</div>
 	<button class="done_cal">Показать</button>
 </div>
+
+
+<?php if ($drop_list): ?>
+	<div class="month_drop_list">
+		<select id="month_drop_list">
+			<option value="0">Детализация по дням <img alt="" src="/img/month_drop_list.png"></option>								
+			<option value="1">Детализация по неделям <img alt="" src="/img/month_drop_list.png"></option>
+			<option value="2">Детализация по месяцам <img alt="" src="/img/month_drop_list.png"></option>
+		</select>
+		<img src="img/drop_arrow.svg" alt="drop_arrow">
+	</div>
+<?php endif; ?>

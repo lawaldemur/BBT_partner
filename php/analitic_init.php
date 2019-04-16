@@ -77,3 +77,10 @@ for ($i=0; $i < count($array); $i++) {
 		}
 	}
 }
+
+
+while ($offset > count($array)) {
+	$page--;
+	$offset = $page * $rows - $rows;
+	$limit = $page * $rows;
+}
