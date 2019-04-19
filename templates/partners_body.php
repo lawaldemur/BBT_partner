@@ -19,7 +19,7 @@ notification();
 			change_date($period, $_COOKIE['calendarText']);
 			
 			// поиск по таблице
-			search_table('search_table_command', 'Введите имя партнера или нас. пункт', $_GET['search']);
+			search_table('search_table_command', 'Введите имя партнера или нас. пункт', $_GET['search'], true);
 			?>
 		</div>
 		
@@ -42,7 +42,7 @@ notification();
 				</thead>
 				<tbody>
 					<?php for ($i=$offset; $i < $limit && $i < count($array); $i++)
-						partners_tbody_tr($array[$i]);
+						partners_tbody_tr($array[$i], $role);
 					?>
 				</tbody>
 			</table>

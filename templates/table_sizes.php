@@ -1,4 +1,4 @@
-<div class="table_sizes">
+<div class="table_sizes <?=$add_class?>">
 	<?php if ($rows == 20): ?>
 		<div class="table_size table_size_active">20</div>
 	<?php else: ?>

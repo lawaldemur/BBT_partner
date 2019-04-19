@@ -1,8 +1,6 @@
 <?php
 require '../db.php';
-// connect to shop db
-$dbcp = mysqli_connect('h809274500.mysql','h809274500_dev','Bbtonline1','h809274500_db') or die ('no db');
-$dbcp->set_charset("utf8");
+require '../db_shop.php';
 
 // get user (parent)
 $correct = $dbc->query("SELECT * FROM `users` WHERE `id` = '".$_POST['id']."'");
@@ -28,7 +26,7 @@ do {
 	$code = generateCode();
 
 	$already = $dbc->query("SELECT * FROM `users` WHERE `code` = '$code'");
-	$already2 = $dbcp->query("SELECT * FROM `wp_users` WHERE `code` = '$code'");
+	$already2 = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `code` = '$code'");
 	if ($already->num_rows === 0 && $already2->num_rows === 0)
 		$new_code = false;
 } while ($new_code);
@@ -59,4 +57,4 @@ $result = $dbc->query("UPDATE `users` SET `auth` = '".get_hash_password($id, $pa
 echo $result;
 
 mysqli_close($dbc);
-mysqli_close($dbcp);
+mysqli_close($dbc_shop);

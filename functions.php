@@ -242,23 +242,3 @@ function printCalendar() { ?>
 </div>
 <?php }
 
-
-
-
-
-
-
-
-
-
-// foreach ($_COOKIE as $key => $value) {
-// 	if ($key == 'period')
-// 		$_COOKIE[$key] = str_replace('\'', '', $_COOKIE[$key]);
-// 	$_COOKIE[$key] = str_replace(';', '', $dbc->real_escape_string($value));
-// }
-// if (strpos($_COOKIE['period'], 'BETWEEN') !== false)
-// 	$_COOKIE['period'] = substr($_COOKIE['period'], 0, 21).'\''.substr($_COOKIE['period'], 21, 10).'\''.substr($_COOKIE['period'], 31, 5).'\''.substr($_COOKIE['period'], 36, 10).'\'';
-
-
-
-

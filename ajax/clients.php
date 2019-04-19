@@ -18,6 +18,9 @@ for ($i=$offset; $i < $limit && $i < count($array); $i++)
 	clients_tbody_tr($array[$i]);
 ?>
 ===================================================================================================
-<?php include '../php/pagination.php'; ?>
+<?php
+$page_file_name = 'clients.php';
+include '../php/pagination.php';
+?>
 ===================================================================================================
 <?php echo $_POST['token']; ?>

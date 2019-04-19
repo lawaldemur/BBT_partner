@@ -46,27 +46,9 @@
 					?></tr>
 				</thead>
 				<tbody>
-					<?php for ($i=$offset; $i < $limit && $i < count($array); $i++) {
-						?><tr><?php
-							if ($sort == 'bydate')
-								simple_td(date("d.m.Y", strtotime($array[$i]['date'])));
-
-							product_name_td($array[$i]['img'], $array[$i]['name'], $array[$i]['other']);
-
-							$rub = ' &#8381;';
-							simple_td($array[$i]['format']);
-							simple_td(strval($array[$i]['summ'] / $array[$i]['price']));
-							simple_td(strval($array[$i]['price']).$rub);
-							simple_td(strval($array[$i]['summ']).$rub);
-
-							if ($role == 'ББТ')
-								simple_td(strval($array[$i]['to_bbt']).$rub);
-							elseif ($role == 'Команда')
-								simple_td(strval($array[$i]['to_command']).$rub);
-							elseif ($role == 'Партнер')
-								simple_td(strval($array[$i]['to_partner']).$rub);
-						?></tr><?php
-					} ?>
+					<?php for ($i=$offset; $i < $limit && $i < count($array); $i++)
+						analitic_books_tr($sort, $array[$i], $role);
+					?>
 				</tbody>
 			</table>
 		</div>

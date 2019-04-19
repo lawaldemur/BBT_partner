@@ -2,9 +2,10 @@
 require '../db.php';
 require '../db_shop.php';
 require '../connect_templates.php';
-// require './php/access.php';
+require '../php/access.php';
 
 $search = $_POST['search'] != '' ? $_POST['search'] : '';
+$_GET['page'] = $_POST['page'];
 $period = $_POST['period'];
 
 if ($_POST['command_partners'] == '')
@@ -21,10 +22,13 @@ if ($_POST['table'] == 'command') {
 	$partners_array = $commands_array;
 	require '../php/get_partners_list.php';
 	for ($i=$offset; $i < $limit && $i < count($array); $i++)
-		partners_tbody_tr($array[$i]);
+		partners_tbody_tr($array[$i], $_POST['role']);
 }
 ?>
 ===================================================================================================
-<?php include '../php/pagination.php'; ?>
+<?php
+$page_file_name = $_POST['table'] == 'command' ? 'commands.php' : 'partners.php';
+include '../php/pagination.php';
+?>
 ===================================================================================================
 <?php echo $_POST['token']; ?>

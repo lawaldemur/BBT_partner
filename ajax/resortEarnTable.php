@@ -131,6 +131,8 @@ elseif($_POST['table'] == '2'):
 		$result_b = $dbc->query("SELECT year(date),month(date),SUM(to_bbt)
 		FROM sold WHERE to_partner_id = '0' AND year(date) = $year AND month(date) = {$array[$i]['month(date)']} $where2
 		GROUP BY month(date)");
+		foreach ($result_b as $item2)
+				$array[$i]['bonus'] = round($item2['SUM(to_bbt)'], 2);
 		if ($result_b && $result_b->num_rows > 0)
 			foreach ($result_b as $item2)
 				$array[$i]['bonus'] = round($item2['SUM(to_bbt)'], 2);
@@ -142,7 +144,7 @@ elseif($_POST['table'] == '2'):
 		
 		$array[$i]['text_date'] = $month.' '.$year;
 
-
+		$result_b = [];
 	}
 endif;
 

@@ -1,12 +1,12 @@
 <?php
 // выбор колва отображаемых строк в таблице
-function table_sizes($rows)
+function table_sizes($rows, $add_class='')
 {
 	include 'templates/table_sizes.php';
 }
 
 // пагинация
-function pagination_list($page, $pages, $page_file_name, $search='')
+function pagination_list($page, $pages, $page_file_name, $search='', $add_class='', $page_class='')
 {
 	include 'templates/pagination_list.php';
 }
@@ -60,7 +60,7 @@ function create_hidden($id, $value)
 }
 
 // элементы после таблиц
-function after_table_filters($hiddens, $pagination, $table_sizes)
+function after_table_filters($hiddens, $pagination, $table_sizes, $add_class='', $add_class_pag_list='')
 {
 	include 'templates/after_table_filters.php';
 }
@@ -259,7 +259,7 @@ function commands_tbody_tr($array)
 }
 
 // tbody tr таблицы партнеров
-function partners_tbody_tr($array)
+function partners_tbody_tr($array, $role)
 {
 	include 'templates/partner_tbody_tr.php';
 }
@@ -292,4 +292,58 @@ function finance_brief_result_bbt($n1, $n2)
 function finance_brief_result($n)
 {
 	include 'templates/finance_brief_result.php';
+}
+
+// профиль команды/партнера на странице finance.php
+function finance_user_view_row($after_table_filters)
+{
+	include 'templates/finance_user_view_row.php';
+}
+
+// таблица отчетов для партнеров
+function finance_partner_table()
+{
+	include 'templates/finance_partner_table.php';
+}
+
+// таблица списка отчетов от команд для ббт
+function finance_bbt_reports_from_command()
+{
+	include 'templates/finance_bbt_reports_from_command.php';
+}
+
+// таблица загрузки отчетов от команд для ББТ
+function finance_command_for_bbt()
+{
+	include 'templates/finance_command_for_bbt.php';
+}
+
+// таблица принятия отчетов от партнеров командой
+function finance_command_from_partner()
+{
+	include 'templates/finance_command_from_partner.php';
+}
+
+// скелет графика на странице finance.php
+function graph_row()
+{
+	include 'templates/graph_row.php';
+}
+
+// таблцица заработка по месяцам для ББТ
+function finance_earn_table($show_earn_table, $earn, $pagination, $table_sizes)
+{
+	include 'templates/finance_earn_table.php';
+}
+
+// строка таблицы проданных книг на странице analitic.php
+function analitic_books_tr($sort, $array, $role)
+{
+	include 'templates/analitic_books_tr.php';
+}
+
+// строка таблицы просмотренных книг на странице analitic.php
+function analitic_views_tr($array)
+{
+	include 'templates/analitic_views_tr.php';
 }

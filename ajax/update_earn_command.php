@@ -16,7 +16,7 @@ if ($_POST['format'] != 'all')
 else
 	$where = "WHERE to_command_id = {$_POST['id']} AND ".$_POST['period'];
 
-$result_on_d = $dbc->query("SELECT SUM(to_command) FROM sold WHERE $date");
+$result_on_d = $dbc->query("SELECT SUM(to_command) FROM sold WHERE to_command_id = {$_POST['id']} AND $date");
 foreach ($result_on_d as $money)
 	echo round($money['SUM(to_command)'], 2);
 echo "|";

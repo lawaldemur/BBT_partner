@@ -1,4 +1,4 @@
-<div class="col-12 after_table_filters">
+<div class="col-12 after_table_filters <?=$add_class?>">
 	<?php
 	foreach ($hiddens as $value)
 		call_user_func_array('create_hidden', $value);
