@@ -36,6 +36,7 @@ jQuery(document).ready(function($) {
 					request_uri: location.pathname + location.search,
 					token: token,
 					role: $('#role').val(),
+					user_id: $('#user_id').val(),
 				},
 			})
 			.done(function(res) {
@@ -85,6 +86,7 @@ jQuery(document).ready(function($) {
 				request_uri: location.pathname + location.search,
 				token: token,
 				role: $('#role').val(),
+				user_id: $('#user_id').val(),
 			},
 		})
 		.done(function(res) {
@@ -138,6 +140,7 @@ jQuery(document).ready(function($) {
 					request_uri: location.pathname + location.search,
 					token: token,
 					role: $('#role').val(),
+					user_id: $('#user_id').val(),
 				},
 			})
 			.done(function(res) {
@@ -200,6 +203,7 @@ jQuery(document).ready(function($) {
 				request_uri: location.pathname + location.search,
 				token: token,
 				role: $('#role').val(),
+				user_id: $('#user_id').val(),
 			},
 		})
 		.done(function(res) {
@@ -260,6 +264,7 @@ jQuery(document).ready(function($) {
 					request_uri: location.pathname + location.search,
 					token: token,
 					role: $('#role').val(),
+					user_id: $('#user_id').val(),
 				},
 			})
 			.done(function(res) {

@@ -49,6 +49,8 @@ notification();
 		after_table_filters(
 			[
 				['active_page', $page],
+				['role', $role],
+				['user_id', $user_id]
 			],
 			[$page, $pages, 'commands.php', $search],
 			[$rows]

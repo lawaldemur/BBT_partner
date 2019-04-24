@@ -54,6 +54,7 @@ notification();
 				['active_page', $page],
 				['role', $role],
 				['command_partners', $role == 'Команда' ? $user_id : ''],
+				['user_id', $user_id]
 			],
 			[$page, $pages, 'partners.php', $search],
 			[$rows]

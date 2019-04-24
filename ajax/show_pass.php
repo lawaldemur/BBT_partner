@@ -1,24 +1,24 @@
 <?php
 require '../db.php';
-session_start();
+require '../php/access.php';
+require '../crypt.php';
 
-$user = false;
-if (isset($_SESSION['logged']))
-	$user = $_SESSION['logged'];
-elseif (isset($_COOKIE['logged']))
-	$user = $_COOKIE['logged'];
-// transform hash to str
-if (!$user)
-	exit('не авторизованный пользователь');
-$user = str_replace(';', '', $dbc->real_escape_string($user));
-$user = $dbc->query("SELECT * FROM `users` WHERE `auth` = '$user'");
-if (!$user || $user->num_rows === 0)
-	exit('не авторизованный пользователь');
-$user = $user->fetch_array(MYSQLI_ASSOC);
-$user_id = $user['id'];
+if (!access(intval($_POST['user_id']), $dbc))
+	exit('отказано в доступе');
 
+$id = intval($_POST['id']);
+$user_id = intval($_POST['user_id']);
 
-$pass = $dbc->query("SELECT * FROM `users` WHERE `id` = {$_POST['id']}");
+$pass = $dbc->query("SELECT * FROM `users` WHERE `id` = $id");
 $pass = $pass->fetch_array(MYSQLI_ASSOC);
-if ($pass['parent'] == $user_id)
-	echo $pass['password'];
+if ($pass['parent'] == $user_id) {
+	$auth = $pass['auth'];
+	$passes = $dbc->query("SELECT * FROM `passwords`");
+
+	if ($passes)
+	foreach ($passes as $pass) {
+		if (password_verify($auth, $pass['id']))
+			echo mc_decrypt($pass['password'], SECRET_KEY);
+	}
+}
+

@@ -1,20 +1,37 @@
 <?php
 require '../db.php';
+require '../crypt.php';
 
 $login = $_POST['login'];
 $password = $_POST['password'];
 $remember = $_POST['remember'] == 'true'; # recieve true/false string
 
-$exist = $dbc->query("SELECT * FROM `users` WHERE `login` = '$login' && `password` = '$password'");
-
+$exist = $dbc->query("SELECT * FROM `users` WHERE `login` = '$login'");
 // if user not found then exit
 if (!$exist || $exist->num_rows === 0) {
 	mysqli_close($dbc);
 	exit('incorrect data');
 }
 
-// set cookie or session
+// find and decrypt password
 $level = $exist->fetch_array(MYSQLI_ASSOC);
+$auth = $level['auth'];
+$passes = $dbc->query("SELECT * FROM `passwords`");
+$pass = '';
+if ($passes)
+foreach ($passes as $passwor) {
+	if (password_verify($auth, $passwor['id']))
+		$pass = $passwor['password'];
+}
+$pass = mc_decrypt($pass, SECRET_KEY);
+
+// if passwords not equal then exit
+if ($pass != $password || strlen($password) == 0) {
+	mysqli_close($dbc);
+	exit('incorrect data');
+}
+
+// set cookie or session
 $position = $level['position'];
 $id = $level['id'];
 $logged = $level['logged'];

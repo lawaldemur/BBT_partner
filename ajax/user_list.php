@@ -4,6 +4,9 @@ require '../db_shop.php';
 require '../connect_templates.php';
 require '../php/access.php';
 
+if (!access(intval($_POST['user_id']), $dbc))
+	exit('отказано в доступе');
+
 $search = $_POST['search'] != '' ? $_POST['search'] : '';
 $_GET['page'] = $_POST['page'];
 $period = $_POST['period'];

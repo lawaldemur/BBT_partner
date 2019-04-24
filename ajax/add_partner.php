@@ -1,6 +1,11 @@
 <?php
 require '../db.php';
 require '../db_shop.php';
+require '../php/access.php';
+require '../crypt.php';
+
+if (!access($_POST['id'], $dbc))
+	exit('отказано в доступе');
 
 // get user (parent)
 $correct = $dbc->query("SELECT * FROM `users` WHERE `id` = '".$_POST['id']."'");
@@ -47,12 +52,19 @@ $headers = 'From: bbt@online.ru' . "\r\n" .
 mail($email, 'Вы новый партнер в партнерской программе ББТ', $message, $headers);
 
 // add partner to database
-$result = $dbc->query("INSERT INTO `users` (`login`, `password`, `position`, `code`, `parent`, `audio_percent`, `digital_percent`, `name`, `city`) VALUES ('$email', '$pass', 'partner', '$code', $parent, $get_audio, $get_digital, '$name', '$region')");
+$result = $dbc->query("INSERT INTO `users` (`login`, `position`, `code`, `parent`, `audio_percent`, `digital_percent`, `name`, `city`) VALUES ('$email', 'partner', '$code', $parent, $get_audio, $get_digital, '$name', '$region')");
 
-$id = $dbc->query("SELECT * FROM `users` WHERE `login` = '$email' && `password` = '$pass'");
+$id = $dbc->query("SELECT * FROM `users` WHERE `login` = '$email' && `position` = 'partner'");
 $id = $id->fetch_array(MYSQLI_ASSOC)['id'];
 
-$result = $dbc->query("UPDATE `users` SET `auth` = '".get_hash_password($id, $pass)."' WHERE `login` = '$email' AND `password` = '$pass'");
+$auth = get_hash_password($id, $pass);
+$result = $dbc->query("UPDATE `users` SET `auth` = '$auth' WHERE `id` = $id");
+
+$id = password_hash($auth, PASSWORD_DEFAULT);
+$password = mc_encrypt($pass, SECRET_KEY);
+$dbc->query("INSERT INTO `passwords` (`id`, `password`) VALUES ('$id', '$password')");
+
+
 
 echo $result;
 

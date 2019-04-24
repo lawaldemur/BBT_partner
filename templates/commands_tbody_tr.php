@@ -1,4 +1,4 @@
-<tr data-id="<?=$array['id']?>" data-email="<?=$array['login']?>" data-digital_percent="<?=$array['digital_percent']?>" data-audio_percent="<?=$array['audio_percent']?>" data-pass_length="<?=strlen($array['password'])?>" data-name="<?=$array['name']?>" data-region="<?=$array['city']?>">
+<tr data-id="<?=$array['id']?>" data-email="<?=$array['login']?>" data-digital_percent="<?=$array['digital_percent']?>" data-audio_percent="<?=$array['audio_percent']?>" data-pass_length="<?=12?>" data-name="<?=$array['name']?>" data-region="<?=$array['city']?>">
 	<?php
 	table_command_name($array['picture'], $array['name'], $array['city']);
 

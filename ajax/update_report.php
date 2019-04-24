@@ -1,5 +1,9 @@
 <?php
 require '../db.php';
+require '../php/access.php';
+
+if (!access(intval($_POST['to']), $dbc))
+	exit('отказано в доступе');
 
 $id = $_POST['id'];
 $accepted_report = (int) ($_POST['accepted_report'] == 'true' ? 1 : 0);

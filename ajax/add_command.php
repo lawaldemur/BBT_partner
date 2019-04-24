@@ -1,8 +1,13 @@
 <?php
 require '../db.php';
+require '../php/access.php';
+require '../crypt.php';
+
+if (!access(intval($_POST['id']), $dbc))
+	exit('отказано в доступе');
 
 // check password
-$correct = $dbc->query("SELECT * FROM `users` WHERE `id` = '".$_POST['id']."' && `password` = '".$_POST['request_pass']."'");
+$correct = $dbc->query("SELECT * FROM `users` WHERE `id` = '".intval($_POST['id'])."' && `password` = '".$_POST['request_pass']."'");
 // if user not found then exit
 if ($correct->num_rows === 0) {
 	mysqli_close($dbc);
@@ -34,13 +39,17 @@ $headers = 'From: bbt@online.ru' . "\r\n" .
 mail($email, 'Вы новая команда ББТ!', $message, $headers);
 
 // add command to database
-$result = $dbc->query("INSERT INTO `users` (`login`, `password`, `position`, `parent`, `audio_percent`, `digital_percent`, `name`, `city`) VALUES ('$email', '$pass', 'command', 1, $get_audio, $get_digital, '$name', '$region')");
+$result = $dbc->query("INSERT INTO `users` (`login`, `position`, `parent`, `audio_percent`, `digital_percent`, `name`, `city`) VALUES ('$email', 'command', 1, $get_audio, $get_digital, '$name', '$region')");
 
-$id = $dbc->query("SELECT * FROM `users` WHERE `login` = '$email' && `password` = '$pass'");
+$id = $dbc->query("SELECT * FROM `users` WHERE `login` = '$email' && `position` = 'command'");
 $id = $id->fetch_array(MYSQLI_ASSOC)['id'];
 
-$result = $dbc->query("UPDATE `users` SET `auth` = '".get_hash_password($id, $pass)."' WHERE `login` = '$email' AND `password` = '$pass'");
+$auth = get_hash_password($id, $pass);
+$result = $dbc->query("UPDATE `users` SET `auth` = '$auth' WHERE `id` = $id");
 
+$id = password_hash($auth, PASSWORD_DEFAULT);
+$password = mc_encrypt($pass, SECRET_KEY);
+$dbc->query("INSERT INTO `passwords` (`id`, `password`) VALUES ('$id', '$password')");
 
 echo $result;
 

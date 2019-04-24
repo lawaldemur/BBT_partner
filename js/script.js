@@ -445,6 +445,7 @@ jQuery(document).ready(function($) {
 			data: {
 				request_pass: request_pass,
 				login: login,
+				id: $('#user_id').val(),
 			},
 		})
 		.done(function(res) {
@@ -460,6 +461,7 @@ jQuery(document).ready(function($) {
 						type: 'POST',
 						dataType: 'html',
 						data: {
+							user_id: $('#user_id').val(),
 							command_id: $('#new_command_id').val(),
 							command_name: $('#new_command_name').val(),
 							command_region: $('#new_command_region').val(),
@@ -504,7 +506,10 @@ jQuery(document).ready(function($) {
 						url: '/ajax/show_pass.php',
 						type: 'POST',
 						dataType: 'html',
-						data: {id: $('#new_command_id').val()},
+						data: {
+							id: $('#new_command_id').val(),
+							user_id: $('#user_id ').val(),
+						},
 					})
 					.done(function(res) {
 						$('.form_add_command_pass_request').hide();
@@ -682,6 +687,7 @@ jQuery(document).ready(function($) {
 						type: 'POST',
 						dataType: 'html',
 						data: {
+							user_id: $('#user_id').val(),
 							partner_id: $('#new_partner_id').val(),
 							partner_name: $('#new_partner_name').val(),
 							partner_region: $('#new_partner_region').val(),
@@ -727,7 +733,10 @@ jQuery(document).ready(function($) {
 						url: '/ajax/show_pass.php',
 						type: 'POST',
 						dataType: 'html',
-						data: {id: $('#new_partner_id').val()},
+						data: {
+							id: $('#new_partner_id').val(),
+							user_id: $('#user_id ').val(),
+						},
 					})
 					.done(function(res) {
 						$('.form_control_partner_pass_request').hide();
@@ -794,8 +803,6 @@ jQuery(document).ready(function($) {
 			.done(function(res) {
 				if (res == 'не авторизованный пользователь')
 					return;
-				if (res != 'session')
-					document.cookie = 'logged='+res+';';
 				// change notification text
 				$('#notification_text').text('Логин успешно изменён');
 				// show notification on 5s
@@ -1463,7 +1470,7 @@ jQuery(document).ready(function($) {
 	// MODAL FORM PASSWORD
 	$('#new_command_password, #new_partner_password').on('input', function() {
 		if ($(this).attr('type') == 'password') {
-			new_val = $(this).val().substr(-1);
+			new_val = '';
 			$(this).val(new_val).attr('type', 'text');
 		}
 	});

@@ -1,7 +1,11 @@
 <?php
 include '../db.php';
+require '../php/access.php';
 include 'makePeriod.php';
 $_POST['period'] = makePeriod($_POST['period']);
+
+if (!access(intval($_POST['id']), $dbc))
+	exit('отказано в доступе');
 
 if(isset($_POST['period'])){
 	$date = $_POST['period'];

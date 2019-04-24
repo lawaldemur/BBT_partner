@@ -167,6 +167,7 @@ $(document).ready(function() {
 			dataType: 'html',
 			data: {
 				id: id,
+				user_id: $('#user_id').val(),
 				token: token,
 				rows_size: $('.user_view_tbody_after_table_filters .table_size_active').text(),
 				page: $('#active_page').val(),
@@ -386,6 +387,7 @@ $(document).ready(function() {
 			dataType: 'html',
 			data: {
 				id: id,
+				user_id: $('#user_id').val(),
 				token: token,
 				rows_size: $('.user_view_tbody_after_table_filters .table_size_active').text(),
 				page: $('#active_page').val(),
@@ -467,6 +469,7 @@ $(document).ready(function() {
 			dataType: 'html',
 			data: {
 				id: id,
+				user_id: $('#user_id').val(),
 				token: token,
 				rows_size: $('.user_view_tbody_after_table_filters .table_size_active').text(),
 				page: $('#active_page').val(),
@@ -523,6 +526,7 @@ $(document).ready(function() {
 				dataType: 'html',
 				data: {
 					id: id,
+					user_id: $('#user_id').val(),
 					token: token,
 					sortColumn: sortColumn,
 					sortColumnType: sortColumnType,

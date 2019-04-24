@@ -336,6 +336,12 @@ function finance_earn_table($show_earn_table, $earn, $pagination, $table_sizes)
 	include 'templates/finance_earn_table.php';
 }
 
+// строка таблцицы заработка по месяцам для ББТ
+function finance_earn_table_tr($date, $dogovor, $bonus, $total)
+{
+	include 'templates/finance_earn_table_tr.php';
+}
+
 // строка таблицы проданных книг на странице analitic.php
 function analitic_books_tr($sort, $array, $role)
 {
@@ -346,4 +352,34 @@ function analitic_books_tr($sort, $array, $role)
 function analitic_views_tr($array)
 {
 	include 'templates/analitic_views_tr.php';
+}
+
+// строка таблицы отчетов пользователя на finance.php
+function finance_view_tr($array)
+{
+	include 'templates/finance_view_tr.php';
+}
+
+// строка таблицы партнеров на view.php
+function view_children_partners_tr($array)
+{
+	include 'templates/view_children_partners_tr.php';
+}
+
+// строка таблицы клиентов на view.php
+function view_children_clients_tr($array)
+{
+	include 'templates/view_children_clients_tr.php';
+}
+
+// строка таблицы отчетов от команд для ббт
+function finance_to_bbt_tr($array, $months)
+{
+	include 'templates/finance_to_bbt_tr.php';
+}
+
+// строка таблицы отчетов от команд/партнеров
+function finance_from_tr($array)
+{
+	include 'templates/finance_from_tr.php';
 }

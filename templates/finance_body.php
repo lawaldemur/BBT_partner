@@ -70,6 +70,7 @@ finance_upload_report();
 		
 		<?php
 		if ($role == 'ББТ') {
+			create_hidden('user_id', $user_id);
 			// таблица-список команд для ББТ
 			finance_bbt_reports_from_command();
 		} elseif($role == 'Команда') {

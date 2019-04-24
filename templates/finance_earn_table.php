@@ -9,14 +9,9 @@
 			?></tr>
 		</thead>
 		<tbody>
-			<?php foreach ($earn as $item): ?>
-				<tr><?php
-					simple_td($item['date']);
-					simple_td(strval($item['n1']).' &#8381;');
-					simple_td(strval($item['n2']).' &#8381;');
-					simple_td(strval($item['total']).' &#8381;');
-				?></tr>
-			<?php endforeach; ?>
+			<?php foreach ($earn as $item)
+				finance_earn_table_tr($item['date'], $item['n1'], $item['n2'], $item['total']);
+			?>
 		</tbody>
 	</table>
 </div>

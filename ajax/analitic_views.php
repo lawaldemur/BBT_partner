@@ -1,8 +1,13 @@
 <?php
 require '../db.php';
 require '../db_shop.php';
+require '../php/access.php';
 require '../connect_templates.php';
 
+if (!access(intval($_POST['user_id']), $dbc))
+	exit('отказано в доступе');
+
+$user_id = intval($_POST['user_id']);
 $sort = $_POST['sortType'];
 $rows = intval($_POST['rows_size']);
 $period = $_POST['period'];

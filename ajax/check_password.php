@@ -1,11 +1,26 @@
 <?php
 require '../db.php';
+require '../php/access.php';
+require '../crypt.php';
 
+if (!access(intval($_POST['id']), $dbc))
+	exit('отказано в доступе');
+
+$id = intval($_POST['id']);
+$login = $_POST['login'];
+$request_pass = $_POST['request_pass'];
 // check password
-$correct = $dbc->query("SELECT * FROM `users` WHERE `login` = '".$_POST['login']."' && `password` = '".$_POST['request_pass']."'");
-// if user not found then exit
-if ($correct->num_rows === 0) {
-	mysqli_close($dbc);
-	exit();
+$auth = $dbc->query("SELECT * FROM `users` WHERE `login` = '$login' AND `id` = $id");
+$auth = $auth->fetch_array(MYSQLI_ASSOC)['auth'];
+$pass = '';
+
+$passes = $dbc->query("SELECT * FROM `passwords`");
+if ($passes)
+foreach ($passes as $passwor) {
+	if (password_verify($auth, $passwor['id']))
+		$pass = mc_decrypt($passwor['password'], SECRET_KEY);
 }
-echo true;
+
+if ($pass == $request_pass)
+	echo true;
+

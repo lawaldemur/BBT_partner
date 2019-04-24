@@ -1,177 +1,26 @@
 <?php
 require '../db.php';
+require '../php/access.php';
+require '../connect_templates.php';
 
-$role = $_POST['role'];
-$user_id = $_POST['to'];
+if (!access(intval($_POST['to']), $dbc))
+	exit('отказано в доступе');
 
-$array = array();
-if ($role == 'ББТ') {
-	$reports_array = $dbc->query("SELECT * FROM `reports` WHERE `to_id` = $user_id");
+require '../php/get_finance_table.php';
 
-	foreach ($reports_array as $report) {
-		$from = $dbc->query("SELECT * FROM `users` WHERE `id` = {$report['from_id']}");
-		$from = $from->fetch_array(MYSQLI_ASSOC);
-
-		if ($_POST['search'] != '' && stristr(mb_strtolower($from['name'], 'UTF-8'), mb_strtolower($_POST['search'], 'UTF-8')) === FALSE &&
-		stristr(mb_strtolower($from['city'], 'UTF-8'), mb_strtolower($_POST['search'], 'UTF-8')) === FALSE) {
-			continue;
-		}
-
-		if (isset($array[$from['id']])) {
-			if ($report['paid'] == 0)
-				$array[$from['id']]['count']++;
-			if ($report['viewed'] == 1)
-				$array[$from['id']]['view'] = 1;
-		} else {
-			$array[$from['id']] = array(
-				'id' => $from['id'],
-				'name' => $from['name'],
-				'city' => $from['city'],
-				'picture' => $from['picture'],
-				'count' => $report['paid'] == 0 ? 1 : 0,
-				'view' => $report['viewed'],
-			);
-		}
-
-	}
-} elseif ($role == 'Команда') {
-	$reports_for_bbt = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = $user_id");
-	
-	$reports_array = $dbc->query("SELECT * FROM `reports` WHERE `to_id` = $user_id");
-	foreach ($reports_array as $report) {
-		$from = $dbc->query("SELECT * FROM `users` WHERE `id` = {$report['from_id']}");
-		$from = $from->fetch_array(MYSQLI_ASSOC);
-
-		if (isset($array[$from['id']])) {
-			if ($report['paid'] == 0)
-				$array[$from['id']]['count']++;
-		} else {
-			$array[$from['id']] = array(
-				'id' => $from['id'],
-				'name' => $from['name'],
-				'city' => $from['city'],
-				'picture' => $from['picture'],
-				'count' => $report['paid'] == 0 ? 1 : 0,
-				'link' => '/finance_view.php?id='.$from['id'],
-			);
-		}
-
-	}
-} else {
-	$reports_for_commands = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = $user_id");
-}
-
-// ассоциативный массив в список
-$array = array_values($array);
-
-for ($i=0; $i < count($array); $i++) { 
-	for ($x=$i + 1; $x < count($array); $x++) { 
-		if ($_POST['sortColumnType'] == 'default')
-			$bool = $array[$i][$_POST['sortColumn']] < $array[$x][$_POST['sortColumn']];
-		else
-			$bool = $array[$i][$_POST['sortColumn']] > $array[$x][$_POST['sortColumn']];
-
-		if ($bool) {
-			$temp = $array[$x];
-			$array[$x] = $array[$i];
-           	$array[$i] = $temp;
-		}
-	}
-}
-
-// pagination
-if (!isset($_POST['page'])) $_POST['page'] = 1;
-if (!isset($_POST['rows_size'])) $rows = 20;
-else $rows = $_POST['rows_size'];
-$offset = $_POST['page'] * $rows - $rows;
-$limit = $_POST['page'] * $rows;
-$pages = ceil(count($array) / $rows) + 1;
-
-while ($offset > count($array) && $_POST['page'] > 1) {
-	$_POST['page']--;
-	$offset = $_POST['page'] * $rows - $rows;
-	$limit = $_POST['page'] * $rows;
-}
+if ($role == 'ББТ')
+	for ($i=$offset; $i < $limit && $i < count($array); $i++)
+		finance_from_tr($array[$i]);
 ?>
-
-
-<?php if ($role == 'ББТ'): ?>
-	<?php for ($i=$offset; $i < $limit && $i < count($array); $i++): ?>
-		<tr data-id="<?=$array[$i]['id']?>">
-			<td class="table_command_name">
-				<?php if ($array[$i]['view'] == 1): ?>
-					<div class="viewed_icon"></div>
-				<?php endif ?>
-				<div class="command_picture_wrapp" style="background-image: url(/avatars/<?=$array[$i]['picture']?>);"></div>
-				<div class="command_name_wrap">
-					<span class="command_name"><?=$array[$i]['name']?></span>
-					<span class="command_city"><?=$array[$i]['city']?></span>
-				</div>
-			</td>
-			<td class="table_align_center"><?=$array[$i]['count']?></td>
-		</tr>
-	<?php endfor; ?>
-<?php elseif($role == 'Команда'): ?>
-<?php elseif($role == 'Партнер'): ?>
-<?php endif ?>
-
 ===================================================================================================
+<?php
+$page_file_name = 'finance.php';
+$table_prefix = '&table=from_commands';
 
-
-
-<?php $search = '';
-
-if ($pages <= 10) {
-	for ($i=1; $i < $pages; $i++) {
-		if (($_POST['request_uri'] == "/finance.php" && $i == 1) || ($_POST['page'] == $i)): ?>
-			<a class="page active_page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-		<?php else: ?>
-			<a class="page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-		<?php endif ?>
-	<?php }
-} else {
-	if ($_POST['page'] < 7) {
-		for ($i=1; $i < 8; $i++) {
-			if (($_POST['request_uri'] == "/finance.php" && $i == 1) || ($_POST['page'] == $i)): ?>
-				<a class="page active_page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-			<?php else: ?>
-				<a class="page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-			<?php endif ?>
-		<?php } ?>
-		<span class="triple_dots">...</span>
-		<a class="page" href="/finance.php?page=<?=$pages - 1?>&table=from_commands<?=$search?>"><?=$pages - 1?></a> <?php
-	} elseif ($_POST['page'] >= $pages - 6) { ?>
-		<a class="page" href="/finance.php?page=1&table=from_commands<?=$search?>">1</a>
-		<span class="triple_dots">...</span>
-		<?php
-		for ($i=$pages - 7; $i < $pages; $i++) {
-			if (($_POST['request_uri'] == "/finance.php" && $i == 1) || ($_POST['page'] == $i)): ?>
-				<a class="page active_page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-			<?php else: ?>
-				<a class="page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-			<?php endif ?>
-		<?php }
-	} else { ?>
-		<a class="page" href="/finance.php?page=1&table=from_commands<?=$search?>">1</a>
-		<span class="triple_dots">...</span>
-		<?php
-		for ($i=$_POST['page'] - 3; $i < $_POST['page'] + 4; $i++) {
-			if (($_POST['request_uri'] == "/finance.php" && $i == 1) || ($_POST['page'] == $i)): ?>
-				<a class="page active_page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-			<?php else: ?>
-				<a class="page" href="/finance.php?page=<?=$i?>&table=from_commands<?=$search?>"><?=$i?></a>
-			<?php endif ?>
-		<?php } ?>
-		<span class="triple_dots">...</span>
-		<a class="page" href="/finance.php?page=<?=$pages - 1?>&table=from_commands<?=$search?>"><?=$pages - 1?></a> <?php
-	}
-} ?>
-
-
-
+require '../php/pagination.php';
+?>
 <script>
 	$('.finance_after_table_filters .pagination_list .page').last().addClass('last_pagination');
-
 </script>
 <script>
 	var token = '';
@@ -193,6 +42,7 @@ if ($pages <= 10) {
 			dataType: 'html',
 			data: {
 				id: id,
+				user_id: $('#user_id').val(),
 				token: token,
 				rows_size: $('.user_view_tbody_after_table_filters .table_size_active').text(),
 				page: $('#active_page').val(),
@@ -202,7 +52,6 @@ if ($pages <= 10) {
 			},
 		})
 		.done(function(res) {
-			console.log(res);
 			res = res.split('////////=============////////');
 			if (res[3] == token) {
 				$('.user_view_tbody').html(res[1]);
@@ -221,10 +70,6 @@ if ($pages <= 10) {
 		});
 		
 	});
-
-	
-	
 </script>
-
 ===================================================================================================
 <?php echo $_POST['token']; ?>

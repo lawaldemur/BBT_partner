@@ -5,7 +5,7 @@
 			if (!isset($_GET['reset']))
 				forgot_pass_step_1();
 			else
-				forgot_pass_step_2($correct['id'], $correct['password']);
+				forgot_pass_step_2($correct['id'], $correct['auth']);
 			?>
 		</div>
 	</div>
