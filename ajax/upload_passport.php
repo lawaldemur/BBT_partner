@@ -13,7 +13,7 @@ if (!isset($_FILES['file'])) {
 
 $id = intval($_GET['id']);
 
-if (!access($id, $dbc))
+if (!access($id, $db))
 	exit('отказано в доступе');
 
 $format = explode('.', $_FILES['file']['name']);
@@ -30,8 +30,9 @@ move_uploaded_file($_FILES['file']['tmp_name'], '../service/passports/' . $file_
 echo $file_name;
 
 // get data
-$data = $dbc->query("SELECT * FROM `users` WHERE `id` = $id");
-$data = $data->fetch_array(MYSQLI_ASSOC);
+$db->set_table('users');
+$db->set_where(['id' => $id]);
+$data = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 // decode to array
 $data = json_decode($data['data'], true);
 // append to passport item
@@ -39,6 +40,5 @@ $data['passport'][] = $file_name;
 // encode back to json
 $data = json_encode($data, JSON_UNESCAPED_UNICODE);
 // send to db
-$dbc->query("UPDATE `users` SET `data` = '$data' WHERE `id` = $id");
-
-mysqli_close($dbc);
+$db->set_update(['data' => $data]);
+$db->update('si');

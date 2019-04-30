@@ -3,17 +3,22 @@ require '../db.php';
 require '../php/access.php';
 require '../crypt.php';
 
-if (!access(intval($_POST['user_id']), $dbc))
+if (!access(intval($_POST['user_id']), $db))
 	exit('отказано в доступе');
 
 $id = intval($_POST['id']);
 $user_id = intval($_POST['user_id']);
 
-$pass = $dbc->query("SELECT * FROM `users` WHERE `id` = $id");
-$pass = $pass->fetch_array(MYSQLI_ASSOC);
+$db->set_table('users');
+$db->set_where(['id' => $id]);
+$pass = $db->select('i')->fetch_array(MYSQLI_ASSOC);
+
 if ($pass['parent'] == $user_id) {
 	$auth = $pass['auth'];
-	$passes = $dbc->query("SELECT * FROM `passwords`");
+
+	$db->set_table('passwords');
+	$db->set_where([]);
+	$passes = $db->select();
 
 	if ($passes)
 	foreach ($passes as $pass) {

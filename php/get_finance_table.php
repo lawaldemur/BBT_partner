@@ -4,11 +4,14 @@ $user_id = $_POST['to'];
 
 $array = array();
 if ($role == 'ББТ') {
-	$reports_array = $dbc->query("SELECT * FROM `reports` WHERE `to_id` = $user_id");
+	$db->set_table('reports');
+	$db->set_where(['to_id' => $user_id]);
+	$reports_array = $db->select('i');
 
 	foreach ($reports_array as $report) {
-		$from = $dbc->query("SELECT * FROM `users` WHERE `id` = {$report['from_id']}");
-		$from = $from->fetch_array(MYSQLI_ASSOC);
+		$db->set_table('users');
+		$db->set_where(['id' => $report['from_id']]);
+		$from = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 
 		if ($_POST['search'] != '' && stristr(mb_strtolower($from['name'], 'UTF-8'), mb_strtolower($_POST['search'], 'UTF-8')) === FALSE &&
 		stristr(mb_strtolower($from['city'], 'UTF-8'), mb_strtolower($_POST['search'], 'UTF-8')) === FALSE) {
@@ -33,12 +36,16 @@ if ($role == 'ББТ') {
 
 	}
 } elseif ($role == 'Команда') {
-	$reports_for_bbt = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = $user_id");
-	
-	$reports_array = $dbc->query("SELECT * FROM `reports` WHERE `to_id` = $user_id");
+	$db->set_table('reports');
+	$db->set_where(['to_id' => $user_id]);
+	$reports_array = $db->select('i');
+
+	$db->set_where(['from_id' => $user_id]);
+	$reports_for_bbt = $db->select('i');
 	foreach ($reports_array as $report) {
-		$from = $dbc->query("SELECT * FROM `users` WHERE `id` = {$report['from_id']}");
-		$from = $from->fetch_array(MYSQLI_ASSOC);
+		$db->set_table('users');
+		$db->set_where(['id' => $report['from_id']]);
+		$from = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 
 		if (isset($array[$from['id']])) {
 			if ($report['paid'] == 0)
@@ -56,7 +63,9 @@ if ($role == 'ББТ') {
 
 	}
 } else {
-	$reports_for_commands = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = $user_id");
+	$db->set_table('reports');
+	$db->set_where(['from_id' => $user_id]);
+	$reports_for_commands = $db->select('i');
 }
 
 // ассоциативный массив в список

@@ -2,7 +2,10 @@
 require '../db.php';
 $email = $_POST['email'];
 
-$correct = $dbc->query("SELECT * FROM users WHERE login = '$email'");
+$db->set_table('users');
+$db->set_where(['login' => $email]);
+$correct = $db->select('s');
+
 if (!$correct || $correct->num_rows === 0) {
 	echo "no";
 } else {
@@ -20,5 +23,3 @@ if (!$correct || $correct->num_rows === 0) {
 	    'X-Mailer: PHP/' . phpversion();
 	mail($email, 'Сброс пароля', $message, $headers);
 }
-
-mysqli_close($dbc);

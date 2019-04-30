@@ -6,24 +6,27 @@ $sort = $_COOKIE['sort'] ? $_COOKIE['sort'] : 'bydate';
 $rows = isset($_COOKIE['rows']) ? intval($_COOKIE['rows']) : 20;
 $period = $_COOKIE['period'] ? $_COOKIE['period'] : '`date` >= CURDATE()';
 $format = $_COOKIE['format'] ? $_COOKIE['format'] : 'all';
-$where = 'WHERE '.$period . ($format == 'all' ? '' : " AND `format` = '$format'");
+$types = '';
+$_POST['sortColumn'] = $sort == 'bydate' ? 'date' : 'name';
+$_POST['sortColumnType'] = 'default';
 
-if ($role == 'ББТ') {
-	if ($sort == 'bydate')
-		$books = $dbc->query("SELECT * FROM `analitic` $where");
-	else
-		$books = $dbc->query("SELECT * FROM `analitic_bybook` $where");
-} elseif ($role == 'Команда') {
-	if ($sort == 'bydate')
-		$books = $dbc->query("SELECT * FROM `analitic` $where AND `to_command_id` = $user_id");
-	else
-		$books = $dbc->query("SELECT * FROM `analitic_bybook` $where AND `to_command_id` = $user_id");
-} elseif ($role == 'Партнер') {
-	if ($sort == 'bydate')
-		$books = $dbc->query("SELECT * FROM `analitic` $where AND `to_partner_id` = $user_id");
-	else
-		$books = $dbc->query("SELECT * FROM `analitic_bybook` $where AND `to_partner_id` = $user_id");
+$where = ['date' => $period];
+if ($format != 'all') {
+	$where['format'] = $format;
+	$types .= 's';
 }
 
+if ($role == 'Команда') {
+	$where['to_command_id'] = $user_id;
+	$types .= 'i';
+}
+elseif ($role == 'Партнер') {
+	$where['to_partner_id'] = $user_id;
+	$types .= 'i';
+}
+
+$db->set_where($where);
+$db->set_table($sort == 'bydate' ? 'analitic' : 'analitic_bybook');
+$books = $db->select($types);
 
 require 'get_analitic_books_list.php';

@@ -3,7 +3,7 @@ require '../db.php';
 require '../php/access.php';
 require '../connect_templates.php';
 
-if (!access(intval($_POST['to']), $dbc))
+if (!access(intval($_POST['to']), $db))
 	exit('отказано в доступе');
 
 require '../php/get_finance_table.php';

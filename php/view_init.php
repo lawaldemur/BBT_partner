@@ -15,22 +15,29 @@ if ($format != 'all')
 $view_position = $view_position ? $view_position : $view['position'];
 // get info about user
 if ($view_position != 'client') {
+	$db->set_table('users');
 	$address = json_decode($view['data'])->general_address;
 	$address = $address == '' ? 'г. '.$view['city'] : $address;
 
 	$picture = '/avatars' . '/' . $view['picture'];
 
-	if ($role == 'ББТ')
-		$commands = $dbc->query("SELECT * FROM `users` WHERE `position` = 'command'");
+	if ($role == 'ББТ') {
+		$db->set_where(['position' => 'command']);
+		$commands = $db->select('s');
+	}
 
-	if ($view_position == 'command')
-		$children = $dbc->query("SELECT * FROM `users` WHERE `parent` = $id");
+	if ($view_position == 'command') {
+		$db->set_where(['parent' => $id]);
+		$children = $db->select('i');
+	}
 	elseif ($view_position == 'partner') {
 		// get code
-		$code = $dbc->query("SELECT * FROM `users` WHERE `id` = $id");
-		$code = $code->fetch_array(MYSQLI_ASSOC)['code'];
+		$db->set_where(['id' => $id]);
+		$code = $db->select('i')->fetch_array(MYSQLI_ASSOC)['code'];
 
-		$children = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `parent` = '$code'");
+		$db_shop->set_table('wp_users');
+		$db_shop->set_where(['parent' => $code]);
+		$children = $db_shop->select('s');
 	}
 
 
@@ -41,31 +48,40 @@ if ($view_position != 'client') {
 	$column = 'to_'.$view_position;
 
 	// get today
-	$todays = $dbc->query("SELECT * FROM `sold` WHERE `{$column}_id` = $id AND `date` >= CURDATE()");
+	$db->set_table('sold');
+	$db->set_where([$column.'_id' => $id, 'date' => '`date` >= CURDATE()']);
+	$todays = $db->select('i');
 	if ($todays)
 		foreach ($todays as $today)
 			$get_today += $today[$column];
 	// get this week
-	$weeks = $dbc->query("SELECT * FROM `sold` WHERE `{$column}_id` = $id AND `date` >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)");
+	$db->set_where([$column.'_id' => $id, 'date' => '`date` >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)']);
+	$weeks = $db->select('i');
 	if ($weeks)
 		foreach ($weeks as $week)
 			$get_week += $week[$column];
 	// get this month
-	$months = $dbc->query("SELECT * FROM `sold` WHERE `{$column}_id` = $id AND `date` >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)");
+	$db->set_where([$column.'_id' => $id, 'date' => '`date` >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)']);
+	$months = $db->select('i');
 	if ($months)
 		foreach ($months as $month)
 			$get_month += $month[$column];		
 	// get this week
-	$years = $dbc->query("SELECT * FROM `sold` WHERE `{$column}_id` = $id AND `date` >= DATE_SUB(CURRENT_DATE, INTERVAL 365 DAY)");
+	$db->set_where([$column.'_id' => $id, 'date' => '`date` >= DATE_SUB(CURRENT_DATE, INTERVAL 365 DAY)']);
+	$years = $db->select('i');
 	if ($years)
 		foreach ($years as $year)
 			$get_year += $year[$column];	
 
 } else {
 	// get picture
-	$picture = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'profile_pic'");
-	$picture = $picture->fetch_array(MYSQLI_ASSOC)['meta_value'];
-	$picture = $dbc_shop->query("SELECT * FROM `wp_posts` WHERE `ID` = $picture");
+	$db_shop->set_table('wp_usermeta');
+	$db_shop->set_where(['user_id' => $id, 'meta_key' => 'profile_pic']);
+	$picture = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['meta_value'];
+
+	$db_shop->set_table('wp_posts');
+	$db_shop->set_where(['ID' => $picture]);
+	$picture = $db_shop->select('i');
 	if ($picture) {
 		$picture = $picture->fetch_array(MYSQLI_ASSOC)['guid'];
 		$picture = explode('/', $picture);
@@ -76,13 +92,21 @@ if ($view_position != 'client') {
 	
 
 	// get phone and email for about tab
-	$billing_phone = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'billing_phone'");
+	$db_shop->set_table('wp_usermeta');
+	$db_shop->set_where(['user_id' => $id, 'meta_key' => 'billing_phone']);
+
+	$billing_phone = $db_shop->select('is');
 	if ($billing_phone)
 		$billing_phone = $billing_phone->fetch_array(MYSQLI_ASSOC)['meta_value'];
-	$billing_email = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'billing_email'");
+
+	$db_shop->set_where(['user_id' => $id, 'meta_key' => 'billing_email']);
+	$billing_phone = $db_shop->select('is');
 	if ($billing_email)
 		$billing_email = $billing_email->fetch_array(MYSQLI_ASSOC)['meta_value'];
-	$billing_email2 = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `ID` = $id");
+
+	$db_shop->set_table('wp_users');
+	$db_shop->set_where(['ID' => $id]);
+	$billing_email2 = $db_shop->select('i');
 	if ($billing_email2) {
 		$billing_email2 = $billing_email2->fetch_array(MYSQLI_ASSOC);
 		if (strpos($billing_email2['user_email'], '@phone') === false)
@@ -91,89 +115,9 @@ if ($view_position != 'client') {
 }
 
 
-
-if ($view['position'] == 'command') {
-	if ($sort == 'bydate')
-		$books = $dbc->query("SELECT * FROM `analitic` $where AND `to_command_id` = $id");
-	else
-		$books = $dbc->query("SELECT * FROM `analitic_bybook` $where AND `to_command_id` = $id");
-} elseif ($view['position'] == 'partner') {
-	if ($sort == 'bydate')
-		$books = $dbc->query("SELECT * FROM `analitic` $where AND `to_partner_id` = $id");
-	else
-		$books = $dbc->query("SELECT * FROM `analitic_bybook` $where AND `to_partner_id` = $id");
-} else {
-	$books = $dbc->query("SELECT * FROM `sold` $where AND `client` = $id");
-}
-
-
-// pagination
+$role = $view['position'];
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $rows = isset($_COOKIE['rows']) ? intval($_COOKIE['rows']) : 20;
-$offset = $page * $rows - $rows;
-$limit = $page * $rows;
-$pages = ceil($books->num_rows / $rows) + 1;
-
-
-$array = array();
-if ($books)
-foreach ($books as $book) {
-	$book['img'] = $dbc_shop->query("SELECT * FROM `wp_posts` WHERE `post_parent` = {$book['product']} AND `post_type` = 'attachment'");
-	$book['img'] = $book['img']->fetch_array(MYSQLI_ASSOC)['guid'];
-
-	if ($book['format'] == 'digital')
-		$book['format'] = '<img src="/img/format_digital.svg" alt="digital_format" width="14" height="18">';
-	elseif ($book['format'] == 'audio')
-		$book['format'] = '<img src="/img/format_audio.svg" alt="audio_format" width="16" height="18">';
-
-	$book['price'] = $dbc_shop->query("SELECT * FROM `wp_postmeta` WHERE `post_id` = {$book['variation']} AND `meta_key` = '_price'");
-	$book['price'] = $book['price']->fetch_array(MYSQLI_ASSOC)['meta_value'];
-
-	if ($sort == 'bybook' && $view_position != 'client') {
-		$total = 0;
-		$summ = unserialize($book['sold']);
-
-		if ($period == '`date` >= CURDATE()')
-			$date = date('Y-m-d');
-
-		foreach ($summ as $sum) {
-			if (strtotime($sum[0]) >= $date) $total += $sum[1];
-		}
-		$book['summ'] = $total;
-	}
-
-	$book['count'] = $book['summ'] / $book['price'];
-
-	if (!($role == 'command' || $role == 'partner')) {
-		$book['name'] = $dbc_shop->query("SELECT * FROM `wp_posts` WHERE `ID` = {$book['product']}");
-		$book['name'] = $book['name']->fetch_array(MYSQLI_ASSOC)['post_title'];
-
-		$book['other'] = $dbc_shop->query("SELECT * FROM `wp_postmeta` WHERE `post_id` = {$book['variation']} AND `meta_key` = 'attribute_pa_writer'");
-		$book['other'] = $book['other']->fetch_array(MYSQLI_ASSOC)['meta_value'];
-		$book['other'] = $dbc_shop->query("SELECT * FROM `wp_terms` WHERE `slug` = '{$book['other']}'");
-		$book['other'] = $book['other']->fetch_array(MYSQLI_ASSOC)['name'];
-
-		if ($book['other'] == '') {
-			$other = $dbc->query("SELECT * FROM `analitic` WHERE `product` = {$book['product']}");
-			if ($other)
-				foreach ($other as $author) {
-					$book['other'] = $author['other'];
-					break;
-				}
-		}
-		
-	}
-
-	$array[] = $book;
-}
-
-// sort array by date
-for ($i=0; $i < count($array); $i++) { 
-	for ($x=$i + 1; $x < count($array); $x++) { 
-		if ($array[$i]['date'] < $array[$x]['date']) {
-			$temp = $array[$x];
-			$array[$x] = $array[$i];
-           	$array[$i] = $temp;
-		}
-	}
-}
+$_POST['sortColumn'] = $sort == 'bydate' ? 'date' : 'name';
+$_POST['sortColumnType'] = 'default';
+require 'get_view_books.php';

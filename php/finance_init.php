@@ -9,16 +9,19 @@ $date = $period . ($format == 'all' ? '' : " AND $condition");
 
 // данные для блока над графиком
 if ($role == 'ББТ') {
-	$n1 = $dbc->query("SELECT SUM(to_bbt) FROM sold WHERE to_partner_id <> 0 AND $date");
-	$n1 = intval($n1->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)']);
+	$db->set_table('sold');
+	$db->set_where(['not_equal' => ['to_partner_id', 0], 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
 
-	$n2 = $dbc->query("SELECT SUM(to_bbt) FROM sold WHERE to_partner_id = 0 AND $date");
-	$n2 = intval($n2->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)']);
+	$n1 = intval($db->select('i'.($format == 'all' ? '' : "s"), ['SUM(to_bbt)'])->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)']);
+
+	$db->set_where(['to_partner_id' => 0, 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
+	$n2 = intval($db->select('i'.($format == 'all' ? '' : "s"), ['SUM(to_bbt)'])->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)']);
 } else {
 	$role_l = $role == 'Команда' ? 'command' : 'partner';
 
-	$n = $dbc->query("SELECT SUM(to_$role_l) FROM sold WHERE to_{$role_l}_id = $user_id AND $date");
-	$n = intval($n->fetch_array(MYSQLI_ASSOC)["SUM(to_$role_l)"]);
+	$db->set_table('sold');
+	$db->set_where(['to_'.$role_l.'_id' => $user_id, 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
+	$n = intval($db->select('i'.($format == 'all' ? '' : "s"), ["SUM(to_$role_l)"])->fetch_array(MYSQLI_ASSOC)["SUM(to_$role_l)"]);
 }
 
 // таблица заработков по месяцам для ББТ
@@ -35,11 +38,10 @@ if ($role == 'ББТ') {
 						$period == 'YEAR(`date`) = YEAR(CURDATE())' ||
 						(strpos($period, 'BETWEEN') !== false && $diff);
 
-	$where = $format == 'all' ? '' : "WHERE $condition";
-	$wher2 = $format == 'all' ? '' : "AND $condition";
+	$db->set_table('sold');
+	$db->set_where($format == 'all' ? [] : ['format' => $format]);
+	$months = $db->select($format == 'all' ? '' : 's', ['year(date)', 'month(date)'], ' GROUP BY month(date) ORDER BY date DESC');
 
-	$months = $dbc->query("SELECT year(date), month(date)
-			FROM sold $where GROUP BY month(date) ORDER BY date DESC");
 	$earn = [];
 
 	if ($months)
@@ -50,15 +52,17 @@ if ($role == 'ББТ') {
 		$month = $months_list[intval($item['month(date)']) - 1];
 		$out['date'] = $month.' '.$year;
 		// dogovors
-		$n = $dbc->query("SELECT year(date), month(date), SUM(to_bbt) FROM sold
-			WHERE to_partner_id > 0 AND year(date) = $year AND month(date) = {$item['month(date)']} $where2 GROUP BY month(date)");
+		$db->set_table('sold');
+		$db->set_where(['not_equal' => ['to_partner_id', 0], 'year(date)' => $year, 'month(date)' => $item['month(date)']] + ($format == 'all' ? [] : ['format' => $format]));
+		$n = $db->select('iss'.($format == 'all' ? '' : 's'), ['year(date)', 'month(date)', 'SUM(to_bbt)'], ' GROUP BY month(date)');
+
 		if ($n && $n->num_rows > 0)
 			$out['n1'] = $n->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)'];
 		else
 			$out['n1'] = 0;
 		// bonuses
-		$n = $dbc->query("SELECT year(date),month(date),SUM(to_bbt) FROM sold
-			WHERE to_partner_id = '0' AND year(date) = $year AND month(date) = {$item['month(date)']} $where2 GROUP BY month(date)");
+		$db->set_where(['to_partner_id' => 0, 'year(date)' => $year, 'month(date)' => $item['month(date)']] + ($format == 'all' ? [] : ['format' => $format]));
+		$n = $db->select('iss'.($format == 'all' ? '' : 's'), ['year(date)', 'month(date)', 'SUM(to_bbt)'], ' GROUP BY month(date)');
 		if ($n && $n->num_rows > 0)
 			$out['n2'] = $n->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)'];
 		else

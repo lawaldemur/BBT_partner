@@ -3,16 +3,28 @@ require '../db.php';
 require '../php/access.php';
 require '../crypt.php';
 
-if (!access(intval($_POST['id']), $dbc))
+if (!access(intval($_POST['id']), $db))
 	exit('отказано в доступе');
 
 // check password
-$correct = $dbc->query("SELECT * FROM `users` WHERE `id` = '".intval($_POST['id'])."' && `password` = '".$_POST['request_pass']."'");
-// if user not found then exit
-if ($correct->num_rows === 0) {
-	mysqli_close($dbc);
-	exit('incorrect password');
+$pass = '';
+$db->set_table('users');
+$db->set_where(['id' => intval($_POST['id'])]);
+$auth = $db->select('i')->fetch_array(MYSQLI_ASSOC)['auth'];
+
+$db->set_table('passwords');
+$db->set_where([]);
+$passwords = $db->select();
+if ($passwords)
+foreach ($passwords as $passw) {
+	if (password_verify($auth, $passw['id']))
+		$pass = $passw['password'];
 }
+$pass = mc_decrypt($pass, SECRET_KEY);
+// if user not found then exit
+if ($pass != $_POST['request_pass'] || strlen($_POST['request_pass']) == 0)
+	exit('incorrect password');
+
 
 // pass correct, let's continue
 $name = $_POST['name'];
@@ -39,18 +51,35 @@ $headers = 'From: bbt@online.ru' . "\r\n" .
 mail($email, 'Вы новая команда ББТ!', $message, $headers);
 
 // add command to database
-$result = $dbc->query("INSERT INTO `users` (`login`, `position`, `parent`, `audio_percent`, `digital_percent`, `name`, `city`) VALUES ('$email', 'command', 1, $get_audio, $get_digital, '$name', '$region')");
+$db->set_table('users');
 
-$id = $dbc->query("SELECT * FROM `users` WHERE `login` = '$email' && `position` = 'command'");
-$id = $id->fetch_array(MYSQLI_ASSOC)['id'];
+$db->set_insert([
+	'login' => $email,
+	'position' => 'command',
+	'parent' => 1,
+	'audio_percent' => $get_audio,
+	'digital_percent' => $get_digital,
+	'name' => $name,
+	'city' => $region,
+]);
+$db->insert('ssiiiss');
+
+$db->set_where(['login' => $email, 'position' => 'command', 'name' => $name]);
+$id = $db->select('sss')->fetch_array(MYSQLI_ASSOC)['id'];
 
 $auth = get_hash_password($id, $pass);
-$result = $dbc->query("UPDATE `users` SET `auth` = '$auth' WHERE `id` = $id");
+$db->set_update(['auth' => $auth]);
+$db->set_where(['id' => $id]);
+$db->update('si');
 
 $id = password_hash($auth, PASSWORD_DEFAULT);
 $password = mc_encrypt($pass, SECRET_KEY);
-$dbc->query("INSERT INTO `passwords` (`id`, `password`) VALUES ('$id', '$password')");
 
-echo $result;
+$db->set_table('passwords');
+$db->set_insert([
+	'id' => $id,
+	'password' => $password,
+]);
+$db->insert('ss');
 
-mysqli_close($dbc);
+echo true;

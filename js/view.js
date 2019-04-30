@@ -92,6 +92,7 @@ jQuery(document).ready(function($) {
 		if ($('.sort_date').hasClass('sort_active')) sortType = 'bydate';
 		else sortType = 'bybook';
 
+		$('#book').attr('data-task', sortType);
 
 		$.ajax({
 			url: '/ajax/view_books.php',
@@ -113,11 +114,11 @@ jQuery(document).ready(function($) {
 			},
 		})
 		.done(function(res) {
+			console.log(res);
 			res = res.split('===================================================================================================');
 			$('#book tbody').html(res[0]);
 			$('.pagination_list .pages_list').html(res[1]);
 
-			$('#book').attr('data-task', sortType);
 			$('.pagination_list .page').last().addClass('last_pagination');
 
 			$('#book').after('<script>document.cookie = "sort='+sortType+'";</script>');
@@ -192,15 +193,16 @@ jQuery(document).ready(function($) {
 		if ($('.sort_date').hasClass('sort_active')) sortType = 'bydate';
 		else sortType = 'bybook';
 
-		uploadAllBooks();
-
 		if (sortType == 'bybook' && $('th[data-column="date"]').length == 1) {
 			$('th[data-column="date"]').remove();
-			$('th[data-column="name"]').append(' <span class="sort_down sortColumn_type">&#9660;</span>');
+			$('.sortColumn_type').remove();
+			$('th[data-column="name"]:eq(0)').append(' <span class="sort_upper sortColumn_type">&#9660;</span>');
 		} else if (sortType == 'bydate' && $('th[data-column="date"]').length == 0) {
 			$('.sortColumn_type').remove();
 			$('thead tr').prepend('<th class="books" data-column="date">Дата <span class="sort_upper sortColumn_type">&#9660;</span></th>');
 		}
+
+		uploadAllBooks();
 	});
 	// change sort column
 	$('thead th').click(function() {

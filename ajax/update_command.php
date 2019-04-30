@@ -3,7 +3,7 @@ require '../db.php';
 require '../php/access.php';
 require '../crypt.php';
 
-if (!access(intval($_POST['user_id']), $dbc))
+if (!access(intval($_POST['user_id']), $db))
 	exit('отказано в доступе');
 
 $command_id = intval($_POST['command_id']);
@@ -15,15 +15,42 @@ $command_email = $_POST['command_email'];
 $command_password = $_POST['command_password'];
 
 // if password not changed
-if (strlen($command_password) == substr_count($command_password, '#'))
-	echo $dbc->query("UPDATE `users` SET `login` = '$command_email', `audio_percent` = $get_audio, `digital_percent` = $get_digital, `name` = '$command_name', `city` = '$command_region' WHERE `id` = $command_id");
+if (strlen($command_password) == substr_count($command_password, '#')) {
+	$db->set_table('users');
+	$db->set_update([
+		'login' => $command_email,
+		'audio_percent' => $get_audio,
+		'digital_percent' => $get_audio,
+		'name' => $command_name,
+		'city' => $command_region,
+	]);
+	$db->set_where(['id' => $command_id]);
+	$db->update('siissi');
+}
 else {
 	$auth = get_hash_password($command_id, $command_password);
-	echo $dbc->query("UPDATE `users` SET `login` = '$command_email', `audio_percent` = $get_audio, `digital_percent` = $get_digital, `name` = '$command_name', `city` = '$command_region', `auth` = '$auth' WHERE `id` = $command_id");
+
+	$db->set_table('users');
+	$db->set_update([
+		'login' => $command_email,
+		'audio_percent' => $get_audio,
+		'digital_percent' => $get_audio,
+		'name' => $command_name,
+		'city' => $command_region,
+		'auth' => $auth,
+	]);
+	$db->set_where(['id' => $command_id]);
+	$db->update('siisssi');
 
 	$id = password_hash($auth, PASSWORD_DEFAULT);
 	$password = mc_encrypt($command_password, SECRET_KEY);
-	$dbc->query("INSERT INTO `passwords` (`id`, `password`) VALUES ('$id', '$password')");
+
+	$db->set_table('passwords');
+	$db->set_insert([
+		'id' => $id,
+		'password' => $password,
+	]);
+	$db->insert('ss');
 
 	// send email to command
 	$message = "<b><a href='http://partner.bbt-online.ru/'>Партнерская программа ББТ</a></b><br>".
@@ -34,5 +61,3 @@ else {
 	    'X-Mailer: PHP/' . phpversion();
 	mail($email, 'ББТ обновила ваш пароль.', $message, $headers);
 }
-
-mysqli_close($dbc);

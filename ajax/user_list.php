@@ -4,17 +4,17 @@ require '../db_shop.php';
 require '../connect_templates.php';
 require '../php/access.php';
 
-if (!access(intval($_POST['user_id']), $dbc))
+if (!access(intval($_POST['user_id']), $db))
 	exit('отказано в доступе');
 
 $search = $_POST['search'] != '' ? $_POST['search'] : '';
 $_GET['page'] = $_POST['page'];
 $period = $_POST['period'];
 
-if ($_POST['command_partners'] == '')
-	$commands_array = $dbc->query("SELECT * FROM `users` WHERE `position` = '{$_POST['table']}'");
-else
-	$commands_array = $dbc->query("SELECT * FROM `users` WHERE `position` = '{$_POST['table']}' AND `parent` = {$_POST['command_partners']}");
+// get from db
+$db->set_table('users');
+$db->set_where(['position' => $_POST['table']] + ($_POST['command_partners'] == '' ? [] : ['parent' => $_POST['command_partners']]));
+$commands_array = $db->select('s' . ($_POST['command_partners'] == '' ? '' : 'i'));
 
 
 if ($_POST['table'] == 'command') {

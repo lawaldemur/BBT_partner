@@ -2,11 +2,15 @@
 $user_id = $_POST['id'];
 
 $array = array();
-$reports_array = $dbc->query("SELECT * FROM `reports` WHERE `to_id` = $user_id");
+
+$db->set_table('reports');
+$db->set_where(['to_id' => $user_id]);
+$reports_array = $db->select('i');
 
 foreach ($reports_array as $report) {
-	$from = $dbc->query("SELECT * FROM `users` WHERE `id` = {$report['from_id']}");
-	$from = $from->fetch_array(MYSQLI_ASSOC);
+	$db->set_table('users');
+	$db->set_where(['id' => $report['from_id']]);
+	$from = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 
 	if ($_POST['search'] != '' && stristr(strtolower($from['name']), strtolower($_POST['search'])) === FALSE &&
 	stristr(strtolower($from['city']), strtolower($_POST['search'])) === FALSE) {

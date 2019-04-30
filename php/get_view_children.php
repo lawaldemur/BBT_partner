@@ -1,15 +1,24 @@
 <?php
 if ($role == 'partner') {
-	$code = $dbc->query("SELECT * FROM `users` WHERE `id` = $user_id");
-	$code = $code->fetch_array(MYSQLI_ASSOC)['code'];
+	$db->set_table('users');
+	$db->set_where(['id' => $user_id]);
+	$code = $db->select('i')->fetch_array(MYSQLI_ASSOC)['code'];
 }
 
-if ($_POST['search'] == '' && $role == 'command')
-	$users = $dbc->query("SELECT * FROM `users` WHERE `parent` = $user_id");
-elseif ($_POST['search'] != '' && $role == 'command')
-	$users = $dbc->query("SELECT * FROM `users` WHERE `parent` = $user_id AND `name` LIKE '%{$_POST['search']}%' OR `city` LIKE '%{$_POST['search']}%'");
-elseif ($role == 'partner')
-	$users = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `parent` = '$code'");
+$db->set_table('users');
+if ($_POST['search'] == '' && $role == 'command') {
+	$db->set_where(['parent' => $user_id]);
+	$users = $db->select('i');
+}
+elseif ($_POST['search'] != '' && $role == 'command') {
+	$db->set_where(['parent' => $user_id], 'like' => ['name LIKE ? OR city LIKE ?', '%'.$_POST['search'].'%']);
+	$users = $db->select('iss');
+}
+elseif ($role == 'partner') {
+	$db_shop->set_table('wp_users');
+	$db_shop->set_where(['parent' => $code]);
+	$users = $db_shop->select('s');
+}
 
 
 $array = array();
@@ -20,19 +29,25 @@ if ($role == 'command')
 		$user['summ_get'] = 0;
 		$user['summ_wait'] = 0;
 
-		$summ_sold = $dbc->query("SELECT * FROM `sold` WHERE `to_partner_id` = {$user['id']} AND $period");
+		$db->set_table('sold');
+		$db->set_where(['to_partner_id' => $user['id'], 'date' => $period]);
+		$summ_sold = $db->select('i');
 		if ($summ_sold)
 		foreach ($summ_sold as $summ) {
 			$user['summ_sold'] += $summ['summ'];
 			$user['summ_get'] += $summ['to_partner'];
 		}
 
-		$summ_wait = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = {$user['id']} AND `paid` = 0");
+		$db->set_table('reports');
+		$db->set_where(['from_id' => $user['id'], 'paid' => 0]);
+		$summ_wait = $db->select('ii');
 		if ($summ_wait)
 		foreach ($summ_wait as $summ)
 			$user['summ_wait'] += $summ['summ'];
 
-		$clients = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `parent` = '{$user['code']}'");
+		$db_shop->set_table('wp_users');
+		$db_shop->set_where(['parent' => $user['code']]);
+		$clients = $db_shop->select('s');
 		$user['clients'] = $clients->num_rows;
 
 		$array[] = $user;
@@ -42,27 +57,35 @@ else
 		$id = $client['ID'];
 
 		// get name
-		$meta_array = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'first_name'");
+		$db_shop->set_table('wp_usermeta');
+		$db_shop->set_where(['user_id' => $id, 'meta_key' => 'first_name']);
+		$meta_array = $db_shop->select('is');
 		if ($meta_array)
 			$client['first_name'] = $meta_array->fetch_array(MYSQLI_ASSOC)['meta_value'];
 
 		// get second name
-		$meta_array = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'last_name'");
+		$db_shop->set_where(['user_id' => $id, 'meta_key' => 'last_name']);
+		$meta_array = $db_shop->select('is');
 		if ($meta_array)
 			$client['last_name'] = $meta_array->fetch_array(MYSQLI_ASSOC)['meta_value'];
 
 		$client['name'] = $client['first_name'].' '.$client['last_name'];
 
 		// get city
-		$meta_array = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'billing_city'");
+		$db_shop->set_where(['user_id' => $id, 'meta_key' => 'billing_city']);
+		$meta_array = $db_shop->select('is');
 		if ($meta_array)
 			$client['city'] = $meta_array->fetch_array(MYSQLI_ASSOC)['meta_value'];
 
 		// get picture
-		$meta_array = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = $id AND `meta_key` = 'profile_pic'");
+		$db_shop->set_where(['user_id' => $id, 'meta_key' => 'profile_pic']);
+		$meta_array = $db_shop->select('is');
 		if ($meta_array) {
 			$client['picture'] = $meta_array->fetch_array(MYSQLI_ASSOC)['meta_value'];
-			$meta_array = $dbc_shop->query("SELECT * FROM `wp_posts` WHERE `ID` = {$client['picture']}");
+
+			$db_shop->set_table('wp_posts');
+			$db_shop->set_where(['ID' => $client['picture']]);
+			$meta_array = $db_shop->select('i');
 			if ($meta_array)
 				$client['picture'] = 'http://bbt-online.ru/wp-content/uploads/' . end(explode('/', $meta_array->fetch_array(MYSQLI_ASSOC)['guid']));
 		}
@@ -70,12 +93,17 @@ else
 			$client['picture'] = '/avatars/avatar.png';
 
 		// get clients
-		$clients = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `parent` = '{$client['code']}'");
+		$db_shop->set_table('wp_users');
+		$db_shop->set_where(['parent' => $client['code']]);
+		$clients = $db_shop->select('s');
 		$client['clients'] = $clients->num_rows;
 
 		// get bought summ
 		$client['bought'] = 0;
-		$bought = $dbc->query("SELECT * FROM `sold` WHERE `client` = $id AND $period");
+
+		$db->set_table('sold');
+		$db->set_where(['client' => $id, 'date' => $period]);
+		$bought = $db->select('i');
 		if ($bought)
 			foreach ($bought as $value)
 				$client['bought'] += $value['summ'];
@@ -84,7 +112,8 @@ else
 		$client['sold'] = 0;
 		if ($clients)
 			foreach ($clients as $value) {
-				$bought = $dbc->query("SELECT * FROM `sold` WHERE `client` = {$value['ID']} AND $period");
+				$db->set_where(['client' => $value['ID'], 'date' => $period]);
+				$bought = $db->select('i');
 				if ($bought)
 				foreach ($bought as $value2)
 					$client['sold'] += $value2['summ'];

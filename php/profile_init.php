@@ -1,8 +1,10 @@
 <?php
 include 'header.php';
 
-$data = $dbc->query("SELECT * FROM `users` WHERE `id` = $user_id");
-$data = $data->fetch_array(MYSQLI_ASSOC);
+$db->set_where(['id' => $user_id]);
+$db->set_table('users');
+$data = $db->select('i')->fetch_array(MYSQLI_ASSOC);
+
 $picture = $data['picture'];
 $name = $data['name'];
 if ($role == 'Партнер') {

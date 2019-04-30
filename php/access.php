@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-function access($id, $dbc)
+function access($id, $db)
 {
 	$user = false;
 	if (isset($_SESSION['logged']))
@@ -12,8 +12,9 @@ function access($id, $dbc)
 	if (!$user)
 		require false;
 
-	$user = str_replace(';', '', $dbc->real_escape_string($user));
-	$user = $dbc->query("SELECT * FROM `users` WHERE `auth` = '$user'");
+	$db->set_table('users');
+	$db->set_where(['auth' => $user]);
+	$user = $db->select('s');
 
 	if (!$user || $user->num_rows === 0)
 		require false;

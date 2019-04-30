@@ -2,14 +2,15 @@
 require '../db.php';
 require '../php/access.php';
 require 'makePeriod.php';
+
+$id = $_POST['id'];
 $_POST['period'] = makePeriod($_POST['period']);
+$period = $_POST['period'];
+$format = $_POST['format'];
+$_POST['position'] = 'command';
 
 if (!access(intval($_POST['id']), $db))
 	exit('отказано в доступе');
-
-$id = $_POST['id'];
-$period = $_POST['period'];
-$format = $_POST['format'];
 
 $db->set_table('sold');
 $db->set_where(['to_'.$_POST['position'].'_id' => $id, 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
@@ -17,14 +18,12 @@ $result_on_d = $db->select('i'.($format == 'all' ? '' : 's'), ['SUM(to_'.$_POST[
 
 echo $result_on_d ? $result_on_d->fetch_array(MYSQLI_ASSOC)["SUM(to_{$_POST['position']})"] : 0;
 echo "|";
-
 // graph info
 $period = explode('\'', $_POST['period']);
 if ($_POST['graph'] == '0') {
 	$db->set_table('sold');
 	$db->set_where(['to_'.$_POST['position'].'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
 	$result = $db->select('i'.($format == 'all' ? '' : 's'), ['date', 'COUNT(id)', 'SUM(to_'.$_POST['position'].')'], ' GROUP BY date');
-
 	$array = [];
 
 	$start = $period[1];
@@ -34,7 +33,7 @@ if ($_POST['graph'] == '0') {
 	}
 
 	foreach ($result as $item)
-		$array[$item['date']][0] = $item["SUM(to_{$_POST['position']})"];
+		$array[$item['date']][0] = $item['SUM(to_command)'];
 } elseif ($_POST['graph'] == '1') {
 	$db->set_table('sold');
 	$db->set_where(['to_'.$_POST['position'].'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
@@ -49,7 +48,7 @@ if ($_POST['graph'] == '0') {
 		$array[date('Y-m-d', $i)] = array(0);
 
 	foreach ($result as $item)
-		$array[$item['WEEK_MON']][0] = $item["SUM(to_{$_POST['position']})"];
+		$array[$item['WEEK_MON']][0] = $item['SUM(to_command)'];
 } elseif ($_POST['graph'] == '2') {
 	$db->set_table('sold');
 	$db->set_where(['to_'.$_POST['position'].'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
@@ -67,7 +66,7 @@ if ($_POST['graph'] == '0') {
 	}
 
 	foreach ($result as $item)
-		$array[$item['FirstDayOfMonth']][0] = $item["SUM(to_{$_POST['position']})"];
+		$array[$item['FirstDayOfMonth']][0] = $item['SUM(to_command)'];
 }
 
 ksort($array);
@@ -78,3 +77,4 @@ foreach ($array as $key => $value) {
 }
 
 echo json_encode($list);
+

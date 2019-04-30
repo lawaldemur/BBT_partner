@@ -4,7 +4,7 @@ require '../db_shop.php';
 require '../connect_templates.php';
 require '../php/access.php';
 
-if (!access(intval($_POST['parent']), $dbc))
+if (!access(intval($_POST['parent']), $db))
 	exit('отказано в доступе');
 
 $period = $_POST['period'];

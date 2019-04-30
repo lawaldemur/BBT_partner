@@ -1,7 +1,10 @@
 <?php
 $id = $_POST['id'];
 $array = [];
-$reports = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = $id");
+
+$db->set_table('reports');
+$db->set_where(['from_id' => $id]);
+$reports = $db->select('i');
 foreach ($reports as $report) {
 	$array[] = $report;
 }

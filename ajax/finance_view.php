@@ -4,7 +4,7 @@ require '../php/access.php';
 require '../connect_templates.php';
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 
-if (!access(intval($_POST['user_id']), $dbc))
+if (!access(intval($_POST['user_id']), $db))
 	exit('отказано в доступе');
 
 require '../php/get_finance_view.php';

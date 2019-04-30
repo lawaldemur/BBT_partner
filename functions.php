@@ -58,8 +58,10 @@ elseif (isset($_COOKIE['logged']))
 
 if ($user) {
 	// transform hash to str
-	$user = str_replace(';', '', $dbc->real_escape_string($user));
-	$user = $dbc->query("SELECT * FROM `users` WHERE `auth` = '$user'");
+	$db->set_where(['auth' => $user]);
+	$db->set_table('users');
+	$user = $db->select('s');
+
 	if (!$user || $user->num_rows === 0)
 		$user = false;
 	else {
@@ -208,20 +210,38 @@ else {
 // 404 if user not exist
 if ($pages['view'] == $active_page) {
 	if ($view_position != 'client') {
-		$u = $dbc->query("SELECT * FROM `users` WHERE `id` = $id");
+		$db->set_where(['id' => $id]);
+		$db->set_table('users');
+		$u = $db->select('i');
+
 		if (!$u || $u->num_rows === 0)
 			header('Location: http://partner.bbt-online.ru/404/');
 	} else {
-		$u = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `ID` = $id");
+		$db_shop->set_where(['ID' => $id]);
+		$db_shop->set_table('wp_users');
+		$u = $db_shop->select('i');
+
 		if (!$u || $u->num_rows === 0)
 			header('Location: http://partner.bbt-online.ru/404/');
 	}
 }
 
+// имя пользователя в header'е
+if ($role != 'ББТ') {
+	$db->set_table('users');
+	$db->set_where(['id' => $user_id]);
+	$user_name = $db->select('i')->fetch_array(MYSQLI_ASSOC)['name'];
+} else {
+	$user_name = 'ББТ';
+}
 
 // only for partners
-if ($role == 'Партнер')
-	$dbc->query("UPDATE `users` SET `logged` = 1 WHERE `id` = $user_id");
+if ($role == 'Партнер') {
+	$db->set_table('users');
+	$db->set_update(['logged' => 1]);
+	$db->set_where(['id' => $user_id]);
+	$db->update('ii');
+}
 
 
 

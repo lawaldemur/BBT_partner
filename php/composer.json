@@ -1,2 +1,0 @@
-{"name":"dummy app","description":"This app is only a dummy for downloading with the option require.","homepage":"https://php-download.com/","type":"project","require":{"phpoffice/phpword":"^0.15.0.0",
-        "dompdf/dompdf": "^0.8.3"}}

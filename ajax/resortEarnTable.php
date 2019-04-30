@@ -3,7 +3,7 @@ include '../db.php';
 require '../php/access.php';
 require '../connect_templates.php';
 
-if (!access(1, $dbc))
+if (!access(1, $db))
 	exit('отказано в доступе');
 
 require '../php/get_resort_earn_table.php';

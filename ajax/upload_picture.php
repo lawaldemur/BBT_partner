@@ -14,7 +14,7 @@ if (!isset($_FILES['file'])) {
 
 $id = intval($_GET['id']);
 
-if (!access($id, $dbc))
+if (!access($id, $db))
 	exit('отказано в доступе');
 
 $format = explode('.', $_FILES['file']['name']);
@@ -30,7 +30,7 @@ move_uploaded_file($_FILES['file']['tmp_name'], '../avatars/' . $file_name);
 
 echo $file_name;
 
-
-$dbc->query("UPDATE `users` SET `picture` = '$file_name' WHERE `id` = $id");
-
-mysqli_close($dbc);
+$db->set_table('users');
+$db->set_update(['picture' => $file_name]);
+$db->set_where(['id' => $id]);
+$db->update('si');

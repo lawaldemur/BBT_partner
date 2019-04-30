@@ -2,11 +2,14 @@
 require '../db.php';
 require '../php/access.php';
 
-if (!access(1, $dbc))
+if (!access(1, $db))
 	exit('отказано в доступе');
 
 $id = intval($_POST['command_id']);
-$partners = $dbc->query("SELECT * FROM `users` WHERE `position` = 'partner' AND `parent` = $id");
+
+$db->set_table('users');
+$db->set_where(['position' => 'partner', 'parent' => $id]);
+$partners = $db->select('si');
 
 if ($partners->num_rows !== 0)
 	echo 'the command has partners';

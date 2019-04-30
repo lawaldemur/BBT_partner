@@ -60,18 +60,24 @@ $months = array(
 );
 
 // select all users
-$users = $dbc->query("SELECT * FROM `users`");
+$db->set_table('users');
+$db->set_where([]);
+$users = $db->select();
 foreach ($users as $user) {
 	if ($user['position'] == 'BBT')
 		continue;
 
 	if ($user['position'] == 'command') {
 		$to_id = 1;
-		$sold_array = $dbc->query("SELECT * FROM `sold` WHERE `to_command_id` = {$user['id']} AND `date` >= '$date'");
+		$db->set_table('sold');
+		$db->set_where(['to_command_id' => $user['id'], 'date_more_equal' => $date]);
+		$sold_array = $db->select('is');
 		$to = 'to_command';
 	} elseif ($user['position'] == 'partner') {
 		$to_id = $user['parent'];
-		$sold_array = $dbc->query("SELECT * FROM `sold` WHERE `to_partner_id` = {$user['id']} AND `date` >= '$date'");
+		$db->set_table('sold');
+		$db->set_where(['to_partner_id' => $user['id'], 'date_more_equal' => $date]);
+		$sold_array = $db->select('is');
 		$to = 'to_partner';
 	}
 
@@ -129,8 +135,6 @@ foreach ($users as $user) {
 
 	// set header of table
 	if ($user['position'] == 'command') {
-		// $active_sheet->setCellValue('B10','ФИО субагента');
-
 		$active_sheet->setCellValue('B10','Полное наименование реализованного Товара');
 		$active_sheet->setCellValue('C10','Количество реализованного Товара, шт.');
 		$active_sheet->setCellValue('D10','Цена Товара, руб.');
@@ -138,8 +142,6 @@ foreach ($users as $user) {
 		$active_sheet->setCellValue('F10','Ставка вознаграждения, %');
 		$active_sheet->setCellValue('G10','Сумма вознаграждения, руб.');
 	} else {
-		// $active_sheet->setCellValue('B10','Клиент');
-
 		$active_sheet->setCellValue('B10','Полное наименование приобретенного Товара');
 		$active_sheet->setCellValue('C10','Количество приобретенного Товара, шт.');
 		$active_sheet->setCellValue('D10','Цена Товара, руб.');
@@ -194,27 +196,15 @@ foreach ($users as $user) {
 	$i = 11;
 	$act_content = array();
 	foreach ($sold_array as $sold) {
-		// if ($user['position'] == 'command') {
-		// 	$partner = $dbc->query("SELECT * FROM `users` WHERE `id` = {$sold[$to.'_id']}");
-		// 	$partner = $partner->fetch_array(MYSQLI_ASSOC)['name'];
-		// 	$active_sheet->setCellValue('B'.$i, $partner);
-		// } else {
-		// 	$first_name = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = {$sold['client']} AND `meta_key` = 'first_name'");
-		// 	$first_name = $first_name->fetch_array(MYSQLI_ASSOC)['meta_value'];
+		$db_shop->set_table('wp_posts');
+		$db_shop->set_where(['ID' => $sold['product']]);
+		$product = $db_shop->select('i')->fetch_array(MYSQLI_ASSOC)['post_title'];
 
-		// 	$last_name = $dbc_shop->query("SELECT * FROM `wp_usermeta` WHERE `user_id` = {$sold['client']} AND `meta_key` = 'last_name'");
-		// 	$last_name = $last_name->fetch_array(MYSQLI_ASSOC)['meta_value'];
-
-		// 	$active_sheet->setCellValue('B'.$i, $first_name.' '.$last_name);
-		// }
-		
-
-		$product = $dbc_shop->query("SELECT * FROM `wp_posts` WHERE `ID` = {$sold['product']}");
-		$product = $product->fetch_array(MYSQLI_ASSOC)['post_title'];
 		$active_sheet->setCellValue('B'.$i, $product);
 
-		$price = $dbc_shop->query("SELECT * FROM `wp_postmeta` WHERE `post_id` = {$sold['variation']} AND `meta_key` = '_price'");
-		$price = $price->fetch_array(MYSQLI_ASSOC)['meta_value'];
+		$db_shop->set_table('wp_postmeta');
+		$db_shop->set_where(['post_id' => $sold['variation'], 'meta_key' => '_price']);
+		$price = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['meta_value'];
 
 		$active_sheet->setCellValue('C'.$i, $sold['summ'] / $price);
 		$active_sheet->setCellValue('D'.$i, $price);
@@ -345,8 +335,9 @@ foreach ($users as $user) {
 		$file_pdf = $file_name_act.'.pdf';
 		$xmlWriter->save($folder_act2.$file_pdf);
 	} elseif ($user['position'] == 'partner') {
-		$parent = $dbc->query("SELECT * FROM `users` WHERE `id` = {$user['parent']}");
-		$parent = $parent->fetch_array(MYSQLI_ASSOC);
+		$db->set_table('users');
+		$db->set_where(['id' => $user['parent']]);
+		$parent = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 		$parent_info = unserialize($parent['data']);
 
 		if (false) {
@@ -400,9 +391,17 @@ foreach ($users as $user) {
 		$xmlWriter->save($folder_act2.$file_pdf);
 	}
 
-
 	// save info to database
-	$dbc->query("INSERT INTO `reports` (`date`, `from_id`, `to_id`, `sum`, `report_raw`, `act_raw`) VALUES ('$date', {$user['id']}, $to_id, $sum, '$file_name', '$file_name_act')");
+	$db->set_table('reports');
+	$db->set_insert([
+		'date' => $date,
+		'from_id' => $user['id'],
+		'to_id' => $to_id,
+		'sum' => $sum,
+		'report_raw' => $file_name,
+		'act_raw' => $file_name_act,
+	]);
+	$db->insert('siiiss');
 }
 
 echo "success";

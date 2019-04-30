@@ -223,7 +223,7 @@ jQuery(document).ready(function($) {
 		if (sortType == 'bybook' && $('th[data-column="date"]').length == 1) {
 			$('th[data-column="date"]').remove();
 			$('.sortColumn_type').remove();
-			$('th[data-column="name"]').append(' <span class="sort_down sortColumn_type">&#9660;</span>');
+			$('th[data-column="name"]:eq(0)').append(' <span class="sort_upper sortColumn_type">&#9660;</span>');
 		} else if (sortType == 'bydate' && $('th[data-column="date"]').length == 0) {
 			$('.sortColumn_type').remove();
 			$('thead tr').prepend('<th class="books" data-column="date">Дата <span class="sort_upper sortColumn_type">&#9660;</span></th>');

@@ -3,7 +3,7 @@ require '../db.php';
 require '../php/access.php';
 require '../connect_templates.php';
 
-if (!access(intval($_POST['id']), $dbc))
+if (!access(intval($_POST['id']), $db))
 	exit('отказано в доступе');
 
 require '../php/get_finance_to_bbt.php';

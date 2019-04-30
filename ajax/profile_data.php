@@ -2,7 +2,7 @@
 require '../db.php';
 require '../php/access.php';
 
-if (!access(intval($_POST['id']), $dbc))
+if (!access(intval($_POST['id']), $db))
 	exit('отказано в доступе');
 
 $id = $_POST['id'];
@@ -57,9 +57,12 @@ elseif ($_POST['status'] == 'Команда')
 		'manager_email' => $_POST['manager_email']
 	);
 elseif ($_POST['status'] == 'Партнер') {
-	$passport = $dbc->query("SELECT * FROM `users` WHERE `id` = $id");
-	$passport = $passport->fetch_array(MYSQLI_ASSOC);
-	$passport = json_decode($passport['data'], true)['passport'];
+	$db->set_table('users');
+	$db->set_where(['id' => $id]);
+
+	$passport = $db->select('i')->fetch_array(MYSQLI_ASSOC)['data'];
+	$passport = json_decode($passport, true)['passport'];
+
 	$data = array(
 		'general_name' => $_POST['general_name'],
 		'general_soul_name' => $_POST['general_soul_name'],
@@ -82,11 +85,8 @@ elseif ($_POST['status'] == 'Партнер') {
 
 $data = json_encode($data, JSON_UNESCAPED_UNICODE);
 
-if ($_POST['status'] == 'Команда')
-	$dbc->query("UPDATE `users` SET `data` = '$data' WHERE `id` = $id");
-elseif ($_POST['status'] == 'Партнер')
-	$dbc->query("UPDATE `users` SET `data` = '$data' WHERE `id` = $id");
-else
-	$dbc->query("UPDATE `users` SET `data` = '$data' WHERE `id` = $id");
 
-mysqli_close($dbc);
+$db->set_table('users');
+$db->set_update(['data' => $data]);
+$db->set_where(['id' => $id]);
+$db->update('si');

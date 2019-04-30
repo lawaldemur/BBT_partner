@@ -1,5 +1,5 @@
 <?php
-// определяем ключ шиифрования
+// определяем ключ шифрования
 define('SECRET_KEY', parse_ini_file('/home/h809274500/partner.bbt-online.ru/php/secure.ini')['SECRET_KEY']);
 
 // Encrypt Function

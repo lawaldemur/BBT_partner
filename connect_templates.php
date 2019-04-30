@@ -151,7 +151,7 @@ function notification()
 }
 
 // profile_list_row.php
-function profile_list_row()
+function profile_list_row($user_id, $role)
 {
 	include 'templates/profile_list_row.php';
 }

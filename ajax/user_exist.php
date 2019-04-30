@@ -6,30 +6,42 @@ $login = $_POST['login'];
 $password = $_POST['password'];
 $remember = $_POST['remember'] == 'true'; # recieve true/false string
 
-$exist = $dbc->query("SELECT * FROM `users` WHERE `login` = '$login'");
+$db->set_table('users');
+$db->set_where(['login' => $login]);
+$exist = $db->select('s');
 // if user not found then exit
 if (!$exist || $exist->num_rows === 0) {
-	mysqli_close($dbc);
 	exit('incorrect data');
 }
 
 // find and decrypt password
-$level = $exist->fetch_array(MYSQLI_ASSOC);
-$auth = $level['auth'];
-$passes = $dbc->query("SELECT * FROM `passwords`");
-$pass = '';
-if ($passes)
-foreach ($passes as $passwor) {
-	if (password_verify($auth, $passwor['id']))
-		$pass = $passwor['password'];
-}
-$pass = mc_decrypt($pass, SECRET_KEY);
+$access = false;
+foreach ($exist as $level) {
+	$auth = $level['auth'];
 
-// if passwords not equal then exit
-if ($pass != $password || strlen($password) == 0) {
-	mysqli_close($dbc);
+	$db->set_table('passwords');
+	$db->set_where([]);
+	$passes = $db->select();
+
+	$pass = '';
+	if ($passes)
+	foreach ($passes as $passwor) {
+		if (password_verify($auth, $passwor['id']))
+			$pass = $passwor['password'];
+	}
+	$pass = mc_decrypt($pass, SECRET_KEY);
+
+	// if password is right
+	if ($pass == $password && strlen($password) > 0) {
+		$access = true;
+		break;
+	}
+}
+
+if (!$access) {
 	exit('incorrect data');
 }
+
 
 // set cookie or session
 $position = $level['position'];
@@ -54,6 +66,3 @@ if ($position == 'partner' && $logged == 0) {
 		echo 'session';
 	}
 }
-
-// close connect to db
-mysqli_close($dbc);

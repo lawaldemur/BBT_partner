@@ -29,8 +29,9 @@ if (!is_array($date))
 $array = array();
 if ($books)
 foreach ($books as $book) {
-	$book['img'] = $dbc_shop->query("SELECT * FROM `wp_posts` WHERE `post_parent` = {$book['product']} AND `post_type` = 'attachment'");
-	$book['img'] = $book['img']->fetch_array(MYSQLI_ASSOC)['guid'];
+	$db_shop->set_table('wp_posts');
+	$db_shop->set_where(['post_parent' => $book['product'], 'post_type' => 'attachment']);
+	$book['img'] = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['guid'];
 
 	$book['views'] = 0;
 	$views = unserialize($book['watched']);

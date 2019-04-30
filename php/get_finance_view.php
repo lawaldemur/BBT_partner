@@ -1,10 +1,15 @@
 <?php
-$view = $dbc->query("UPDATE `reports` SET `viewed` = 0 WHERE `from_id` = {$_POST['id']}");
+$db->set_table('reports');
+$db->set_update(['viewed' => 0]);
+$db->set_where(['from_id' => $_POST['id']]);
+$db->update('ii');
 
-$view = $dbc->query("SELECT * FROM `users` WHERE `id` = {$_POST['id']}");
-$view = $view->fetch_array(MYSQLI_ASSOC);
+$db->set_table('users');
+$db->set_where(['id' => $_POST['id']]);
+$view = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 if ($view['position'] == 'command') {
-	$children = $dbc->query("SELECT * FROM `users` WHERE `parent` = {$_POST['id']}");
+	$db->set_where(['parent' => $_POST['id']]);
+	$children = $db->select('i');
 	$count = $children->num_rows;
 }
 
@@ -13,8 +18,9 @@ $address = $address == '' ? $view['city'] : $address;
 
 echo $view['picture'].'|0|'.$view['name'].'|0|'.$count.'|0|'.$address;
 
-
-$reports = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = {$_POST['id']}");
+$db->set_table('reports');
+$db->set_where(['from_id' => $_POST['id']]);
+$reports = $db->select('i');
 $array = [];
 foreach ($reports as $report)
 	$array[] = $report;

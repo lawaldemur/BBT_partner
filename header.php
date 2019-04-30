@@ -54,15 +54,7 @@ require_once 'functions.php';
 							</div>
 						</div>
 						<div class="vertical_line"></div>
-						<?php if ($role == 'ББТ'): ?>
-							<div class="header_user_role"><?=$role?></div>
-						<?php else:
-							$name = $dbc->query("SELECT * FROM `users` WHERE `id` = $user_id");
-							$name = $name->fetch_array(MYSQLI_ASSOC);
-							$name = $name['name'];
-							?>
-							<div class="header_user_role"><?=$name?></div>
-						<?php endif; ?>
+						<div class="header_user_role"><?=$user_name?></div>
 					</div>
 					<div class="col-5">
 						<?php if ($active_page == $pages['analitic']): ?>

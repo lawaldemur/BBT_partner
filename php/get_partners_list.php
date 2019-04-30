@@ -5,23 +5,31 @@ foreach ($partners_array as $partner) {
 	$partner['summ_get'] = 0;
 	$partner['summ_wait'] = 0;
 
-	$summ_sold = $dbc->query("SELECT * FROM `sold` WHERE `to_partner_id` = {$partner['id']} AND $period");
+	$db->set_table('sold');
+	$db->set_where(['to_partner_id' => $partner['id'], 'date' => $period]);
+	$summ_sold = $db->select('i');
 	if ($summ_sold)
 	foreach ($summ_sold as $summ) {
 		$partner['summ_sold'] += $summ['summ'];
 		$partner['summ_get'] += $summ['to_partner'];
 	}
 
-	$summ_wait = $dbc->query("SELECT * FROM `reports` WHERE `from_id` = {$partner['id']} AND `paid` = 0");
+	$db->set_table('reports');
+	$db->set_where(['from_id' => $partner['id'], 'paid' => 0]);
+	$summ_wait = $db->select('ii');
 	if ($summ_wait)
 	foreach ($summ_wait as $summ)
 		$partner['summ_wait'] += $summ['sum'];
 
-	$clients = $dbc_shop->query("SELECT * FROM `wp_users` WHERE `parent` = '{$partner['code']}'");
+	$db_shop->set_table('wp_users');
+	$db_shop->set_where(['parent' => $partner['code']]);
+	$clients = $db_shop->select('s');
+
 	$partner['clients'] = $clients->num_rows;
 
-	$partner['parent'] = $dbc->query("SELECT * FROM `users` WHERE `id` = {$partner['parent']}");
-	$partner['parent'] = $partner['parent']->fetch_array(MYSQLI_ASSOC)['name'];
+	$db->set_table('users');
+	$db->set_where(['id' => $partner['parent']]);
+	$partner['parent'] = $db->select('i')->fetch_array(MYSQLI_ASSOC)['name'];
 
 	if ($role == 'Команда') {
 		if ($search != '' &&
@@ -48,7 +56,13 @@ $pages = ceil($partners_array->num_rows / $rows) + 1;
 
 for ($i=0; $i < count($array); $i++) { 
 	for ($x=$i + 1; $x < count($array); $x++) { 
-		if ($array[$i]['name'] > $array[$x]['name']) {
+		if ($_POST['sortColumnType'] == 'default')
+			$bool = $array[$i][$_POST['sortColumn']] < $array[$x][$_POST['sortColumn']];
+		else
+			$bool = $array[$i][$_POST['sortColumn']] > $array[$x][$_POST['sortColumn']];
+		if ($_POST['sortColumn'] == 'name')
+			$bool = !$bool;
+		if ($bool) {
 			$temp = $array[$x];
 			$array[$x] = $array[$i];
            	$array[$i] = $temp;

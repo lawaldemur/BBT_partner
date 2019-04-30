@@ -4,7 +4,7 @@ require '../db_shop.php';
 require '../php/access.php';
 require '../connect_templates.php';
 
-if (!access(intval($_POST['user_id']), $dbc))
+if (!access(intval($_POST['user_id']), $db))
 	exit('отказано в доступе');
 
 $user_id = intval($_POST['user_id']);
@@ -13,12 +13,17 @@ $rows = intval($_POST['rows_size']);
 $period = $_POST['period'];
 $role = $_POST['role'];
 $format = $_POST['format'] ? $_POST['format'] : 'all';
-$where = 'WHERE '.$period . ($format == 'all' ? '' : " AND `format` = '$format'");
 
-if ($_POST['search'] == '')
-	$books = $dbc_shop->query("SELECT * FROM `wp_watched` $where");
-else
-	$books = $dbc_shop->query("SELECT * FROM `wp_watched` $where AND (`name` LIKE '%{$_POST['search']}%' OR `author` LIKE '%{$_POST['search']}%')");
+$db_shop->set_table('wp_watched');
+if ($_POST['search'] == '') {
+	$db_shop->set_where(['date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
+	$books = $db_shop->select(($format == 'all' ? '' : 's'));
+} else {
+	$where = ['date' => $period] + ($format == 'all' ? [] : ['format' => $format]);
+	$where += ['like' => ["(`name` LIKE ? OR `author` LIKE ?)", '%'.$_POST['search'].'%']];
+	$db_shop->set_where($where);
+	$books = $db_shop->select(($format == 'all' ? '' : 's') . 'ss');
+}
 
 $table = $_POST['table'];
 if (($_POST['format'] == 'audio' && $_POST['get_table'] != 'views.audio') ||

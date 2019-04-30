@@ -3,18 +3,22 @@ require '../db.php';
 require '../php/access.php';
 require '../crypt.php';
 
-if (!access(intval($_POST['id']), $dbc))
+if (!access(intval($_POST['id']), $db))
 	exit('отказано в доступе');
 
 $id = intval($_POST['id']);
 $login = $_POST['login'];
 $request_pass = $_POST['request_pass'];
 // check password
-$auth = $dbc->query("SELECT * FROM `users` WHERE `login` = '$login' AND `id` = $id");
-$auth = $auth->fetch_array(MYSQLI_ASSOC)['auth'];
+$db->set_table('users');
+$db->set_where(['login' => $login, 'id' => $id]);
+$auth = $db->select('si')->fetch_array(MYSQLI_ASSOC)['auth'];
+
 $pass = '';
 
-$passes = $dbc->query("SELECT * FROM `passwords`");
+$db->set_table('passwords');
+$db->set_where([]);
+$passes = $db->select();
 if ($passes)
 foreach ($passes as $passwor) {
 	if (password_verify($auth, $passwor['id']))

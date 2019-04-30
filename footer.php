@@ -15,7 +15,7 @@
 				<a href="http://bbt-online.ru/faq/">Вопрос-ответ</a>
 				<a href="http://bbt-online.ru/contacts/">Контакты</a>
 			</div>
-			<?php endif ?>
+			<?php endif; ?>
 		</div>
 	</div>
 </footer>
