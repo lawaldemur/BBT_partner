@@ -58,7 +58,7 @@ foreach ($books as $book) {
 
 		$db_shop->set_table('wp_postmeta');
 		$db_shop->set_where(['post_id' => $book['variation'], 'meta_key' => 'attribute_pa_writer']);
-		$book['other'] = $db_shop->fetch_array(MYSQLI_ASSOC)['meta_value'];
+		$book['other'] = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['meta_value'];
 
 		$db_shop->set_table('wp_terms');
 		$db_shop->set_where(['slug' => $book['other']]);

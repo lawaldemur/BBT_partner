@@ -4,9 +4,6 @@ require '../php/access.php';
 require 'makePeriod.php';
 $_POST['period'] = makePeriod($_POST['period']);
 
-if (!access(intval($_POST['id']), $db))
-	exit('отказано в доступе');
-
 $id = $_POST['id'];
 $period = $_POST['period'];
 $format = $_POST['format'];

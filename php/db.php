@@ -68,19 +68,20 @@ class db {
 			$result = $sth->get_result();
 
 			$conn->close();
+			
 		 	return $result;
 		}
 	}
 
 	public function update($types='')
 	{
-		$query = "UPDATE `{$this->table}`";
+		$query = "UPDATE {$this->table}";
 		$vars = [];
 		$vars_tmp = [];
 		if ($this->update) {
 			$y = 0;
 			foreach ($this->update as $key => $value) {
-				$query .= $y == 0 ? " SET $key = ?" : " AND $key = ?";
+				$query .= $y == 0 ? " SET $key = ?" : ", $key = ?";
 				$vars_tmp[] = $value;
 				$y++;
 			}

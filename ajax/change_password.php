@@ -10,6 +10,22 @@ $id = intval($_POST['id']);
 $pass = $_POST['pass'];
 $auth = get_hash_password($id, $pass);
 
+// remove old data in passwords table
+$db->set_table('users');
+$db->set_where(['id' => $id]);
+$auth_old = $db->select('i')->fetch_array(MYSQLI_ASSOC)['auth'];
+
+$db->set_table('passwords');
+$db->set_where([]);
+$passes = $db->select();
+foreach ($passes as $passwor) {
+	if (password_verify($auth_old, $passwor['id'])) {
+		$db->set_where(['id' => $passwor['id']]);
+		$db->delete('s');
+	}
+}
+
+
 $db->set_table('users');
 $db->set_update(['auth' => $auth]);
 $db->set_where(['id' => $id]);

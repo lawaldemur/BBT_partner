@@ -1,23 +1,8 @@
 jQuery(document).ready(function($) {
 
-
-
 	$('.logged_header_logo').on('click', function() {
 		document.location.href = '/';
 	});
-
-	// var picker = new Lightpick({
-	// 	field: document.getElementById('datepicker'),
-	// 	singleDate: false,
-	// 	numberOfColumns: 3,
-	// 	numberOfMonths: 3,
-	// 	onSelect: function(start, end){
-	// 		var str = '';
-	// 		str += start ? start.format('Do MMMM YYYY') + ' to ' : '';
-	// 		str += end ? end.format('Do MMMM YYYY') : '...';
-	// 		document.getElementById('result-5').innerHTML = str;
-	// 	}
-	// });
 
 	$('.close_overlay_form').click(function(event) {
 		event.preventDefault();
@@ -181,17 +166,35 @@ jQuery(document).ready(function($) {
 
 		// if email incorrect
 		if (!reEmail.test($('#command_email').val())) {
-			// alert('Некорректный email');
 			$('#command_email').addClass('error_input');
 			incorrect = true;
 		} else
 			$('#command_email').removeClass('error_input');
 
-		// dont show next form if anything wrong
-		if (!incorrect) {
+		if (incorrect)
+				return;
+
+		$.ajax({
+			url: '/ajax/check_login.php',
+			type: 'POST',
+			dataType: 'html',
+			data: {
+				id: $('#user_id').val(),
+				login: $('#command_email').val()
+			},
+		})
+		.done(function(res) {
+			if (res == '1') {
+				incorrect = true;
+				$('#command_email').addClass('error_input');
+			}
+
+			if (incorrect)
+				return;
+			// dont show next form if anything wrong
 			$('.form_add_command').hide();
 			$('.form_add_command_pass_request').show();
-		}
+		});
 	});
 
 	$('.form_add_command_pass_request .request_pass_cancel').click(function() {
@@ -241,7 +244,6 @@ jQuery(document).ready(function($) {
 				// console.log('error: ' + res);
 				$('#request_pass').addClass('error_input');
 			} else {
-				// console.log("command added: " + (res == 1));
 				// change notification text
 				$('#notification_text').text('Команда успешно создана');
 				// show notification on 5s
@@ -319,39 +321,58 @@ jQuery(document).ready(function($) {
 		if (incorrect)
 			return;
 
-		var name = $('#partner_name').val();
-		var region = $('#partner_region').val();
-		var get_digital = $('#get_digital').val();
-		var get_audio = $('#get_audio').val();
-		var email = $('#partner_email').val();
-		var login = $('#user_login').val();
-		var id = $('#user_id').val();
-
-		// call ajax
 		$.ajax({
-			url: '/ajax/add_partner.php',
+			url: '/ajax/check_login.php',
 			type: 'POST',
 			dataType: 'html',
 			data: {
-				name: name,
-				region: region,
-				get_digital: get_digital,
-				get_audio: get_audio,
-				email: email,
-				login: login,
-				id: id,
+				id: $('#user_id').val(),
+				login: $('#partner_email').val()
 			},
 		})
 		.done(function(res) {
-			// change notification text
-			$('#notification_text').text('Партнер успешно создан');
-			// show notification on 5s
-			$('#notification').addClass('active_notification');
-			setTimeout(function () {
-				$('#notification').removeClass('active_notification');
-			}, 5000);
-			// hide form and overlay
-			$('#overlay_form, .form_add_partner').hide();
+			if (res == '1') {
+				incorrect = true;
+				$('#partner_email').addClass('error_input');
+			}
+
+			if (incorrect)
+				return;
+
+			var name = $('#partner_name').val();
+			var region = $('#partner_region').val();
+			var get_digital = $('#get_digital').val();
+			var get_audio = $('#get_audio').val();
+			var email = $('#partner_email').val();
+			var login = $('#user_login').val();
+			var id = $('#user_id').val();
+
+			// call ajax
+			$.ajax({
+				url: '/ajax/add_partner.php',
+				type: 'POST',
+				dataType: 'html',
+				data: {
+					name: name,
+					region: region,
+					get_digital: get_digital,
+					get_audio: get_audio,
+					email: email,
+					login: login,
+					id: id,
+				},
+			})
+			.done(function(res) {
+				// change notification text
+				$('#notification_text').text('Партнер успешно создан');
+				// show notification on 5s
+				$('#notification').addClass('active_notification');
+				setTimeout(function () {
+					$('#notification').removeClass('active_notification');
+				}, 5000);
+				// hide form and overlay
+				$('#overlay_form, .form_add_partner').hide();
+			});
 		});
 		
 	});
@@ -672,6 +693,7 @@ jQuery(document).ready(function($) {
 			data: {
 				request_pass: request_pass,
 				login: login,
+				id: $('#user_id').val(),
 			},
 		})
 		.done(function(res) {
@@ -803,6 +825,10 @@ jQuery(document).ready(function($) {
 			.done(function(res) {
 				if (res == 'не авторизованный пользователь')
 					return;
+				else if (res == 'already') {
+					$('#change_email').addClass('error_input');
+					return;
+				}
 				// change notification text
 				$('#notification_text').text('Логин успешно изменён');
 				// show notification on 5s

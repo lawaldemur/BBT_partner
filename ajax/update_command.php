@@ -15,12 +15,12 @@ $command_email = $_POST['command_email'];
 $command_password = $_POST['command_password'];
 
 // if password not changed
-if (strlen($command_password) == substr_count($command_password, '#')) {
+if ($command_password == '############') {
 	$db->set_table('users');
 	$db->set_update([
 		'login' => $command_email,
 		'audio_percent' => $get_audio,
-		'digital_percent' => $get_audio,
+		'digital_percent' => $get_digital,
 		'name' => $command_name,
 		'city' => $command_region,
 	]);
@@ -30,11 +30,26 @@ if (strlen($command_password) == substr_count($command_password, '#')) {
 else {
 	$auth = get_hash_password($command_id, $command_password);
 
+	// remove old data in passwords table
+	$db->set_table('users');
+	$db->set_where(['id' => $command_id]);
+	$auth_old = $db->select('i')->fetch_array(MYSQLI_ASSOC)['auth'];
+
+	$db->set_table('passwords');
+	$db->set_where([]);
+	$passes = $db->select();
+	foreach ($passes as $passwor) {
+		if (password_verify($auth_old, $passwor['id'])) {
+			$db->set_where(['id' => $passwor['id']]);
+			$db->delete('s');
+		}
+	}
+
 	$db->set_table('users');
 	$db->set_update([
 		'login' => $command_email,
 		'audio_percent' => $get_audio,
-		'digital_percent' => $get_audio,
+		'digital_percent' => $get_digital,
 		'name' => $command_name,
 		'city' => $command_region,
 		'auth' => $auth,
@@ -59,5 +74,5 @@ else {
 	    'Reply-To: bbt@online.ru' . "\r\n" .
 	    'Content-type: text/html; charset=iso-8859-1' . "\r\n" .
 	    'X-Mailer: PHP/' . phpversion();
-	mail($email, 'ББТ обновила ваш пароль.', $message, $headers);
+	mail($command_email, 'ББТ обновила ваш пароль.', $message, $headers);
 }

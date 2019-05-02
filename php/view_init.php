@@ -82,7 +82,7 @@ if ($view_position != 'client') {
 	$db_shop->set_table('wp_posts');
 	$db_shop->set_where(['ID' => $picture]);
 	$picture = $db_shop->select('i');
-	if ($picture) {
+	if ($picture && $picture->num_rows !== 0) {
 		$picture = $picture->fetch_array(MYSQLI_ASSOC)['guid'];
 		$picture = explode('/', $picture);
 		$picture = 'http://bbt-online.ru/wp-content/uploads/' . $picture[count($picture) - 1];
@@ -96,18 +96,22 @@ if ($view_position != 'client') {
 	$db_shop->set_where(['user_id' => $id, 'meta_key' => 'billing_phone']);
 
 	$billing_phone = $db_shop->select('is');
-	if ($billing_phone)
+	if ($billing_phone && $billing_phone->num_rows !== 0)
 		$billing_phone = $billing_phone->fetch_array(MYSQLI_ASSOC)['meta_value'];
+	else
+		$billing_phone = '';
 
 	$db_shop->set_where(['user_id' => $id, 'meta_key' => 'billing_email']);
-	$billing_phone = $db_shop->select('is');
-	if ($billing_email)
+	$billing_email = $db_shop->select('is');
+	if ($billing_email && $billing_email->num_rows !== 0)
 		$billing_email = $billing_email->fetch_array(MYSQLI_ASSOC)['meta_value'];
+	else
+		$billing_email = '';
 
 	$db_shop->set_table('wp_users');
 	$db_shop->set_where(['ID' => $id]);
 	$billing_email2 = $db_shop->select('i');
-	if ($billing_email2) {
+	if ($billing_email2 && $billing_email2->num_rows !== 0) {
 		$billing_email2 = $billing_email2->fetch_array(MYSQLI_ASSOC);
 		if (strpos($billing_email2['user_email'], '@phone') === false)
 			$billing_email = $billing_email2['user_email'];

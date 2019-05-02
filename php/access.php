@@ -3,6 +3,8 @@ session_start();
 
 function access($id, $db)
 {
+	$id = intval($id);
+
 	$user = false;
 	if (isset($_SESSION['logged']))
 		$user = $_SESSION['logged'];
@@ -10,14 +12,14 @@ function access($id, $db)
 		$user = $_COOKIE['logged'];
 
 	if (!$user)
-		require false;
+		return false;
 
 	$db->set_table('users');
 	$db->set_where(['auth' => $user]);
 	$user = $db->select('s');
 
 	if (!$user || $user->num_rows === 0)
-		require false;
+		return false;
 
 	$userid = $user->fetch_array(MYSQLI_ASSOC)['id'];
 

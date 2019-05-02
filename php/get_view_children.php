@@ -11,7 +11,10 @@ if ($_POST['search'] == '' && $role == 'command') {
 	$users = $db->select('i');
 }
 elseif ($_POST['search'] != '' && $role == 'command') {
-	$db->set_where(['parent' => $user_id], 'like' => ['name LIKE ? OR city LIKE ?', '%'.$_POST['search'].'%']);
+	$db->set_where([
+		'parent' => $user_id,
+		'like' => ['name LIKE ? OR city LIKE ?', '%'.$_POST['search'].'%']
+	]);
 	$users = $db->select('iss');
 }
 elseif ($role == 'partner') {

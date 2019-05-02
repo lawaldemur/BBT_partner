@@ -10,7 +10,7 @@ if ($role == 'ББТ') {
 	$clients_arr = array();
 
 	$db->set_table('users');
-	$db->set_where('position' => 'partner', 'parent' => $user_id);
+	$db->set_where(['position' => 'partner', 'parent' => $user_id]);
 	$partners_array = $db->select('si');
 	foreach ($partners_array as $partner) {
 		$db_shop->set_table('wp_users');
@@ -23,7 +23,7 @@ if ($role == 'ББТ') {
 } else {
 	// get clients of partner
 	$db->set_table('users');
-	$db->set_where('id' => $id);
+	$db->set_where(['id' => $id]);
 	$code = $db->select('i')->fetch_array(MYSQLI_ASSOC)['code'];
 
 	$db_shop->set_table('wp_users');
@@ -67,7 +67,7 @@ foreach ($clients_arr as $client) {
 		$db_shop->set_table('wp_posts');
 		$db_shop->set_where(['ID' => $client['picture']]);
 		$meta_array = $db_shop->select('i');
-		if ($meta_array)
+		if ($meta_array && $meta_array->num_rows !== 0)
 			$client['picture'] = 'http://bbt-online.ru/wp-content/uploads/' . end(explode('/', $meta_array->fetch_array(MYSQLI_ASSOC)['guid']));
 	}
 	if ($client['picture'] == '')

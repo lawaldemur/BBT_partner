@@ -161,7 +161,7 @@ if ($view['position'] == 'partner' && $role == 'ББТ') {
 	$db->set_table('users');
 	$db->set_where(['code' => $parent]);
 	$partner = $db->select('s');
-	if ($partner) {
+	if ($partner && $partner->num_rows !== 0) {
 		$partner = $partner->fetch_array(MYSQLI_ASSOC);
 
 		$db->set_where(['id' => $partner['parent']]);
