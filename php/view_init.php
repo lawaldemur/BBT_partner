@@ -1,6 +1,25 @@
 <?php
 include 'header.php';
 require 'db_shop.php';
+// get id, bread cumbs and etc
+require './php/bread_cumbs.php';
+
+// 404 if user not exist
+if ($view_position != 'client') {
+	$db->set_where(['id' => $id]);
+	$db->set_table('users');
+	$u = $db->select('i');
+
+	if (!$u || $u->num_rows === 0)
+		header('Location: http://partner.bbt-online.ru/404/');
+} else {
+	$db_shop->set_where(['ID' => $id]);
+	$db_shop->set_table('wp_users');
+	$u = $db_shop->select('i');
+
+	if (!$u || $u->num_rows === 0)
+		header('Location: http://partner.bbt-online.ru/404/');
+}
 
 // init main vars
 $sort = $_COOKIE['sort'] ? $_COOKIE['sort'] : 'bydate';

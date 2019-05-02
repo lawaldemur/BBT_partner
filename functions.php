@@ -1,12 +1,4 @@
 <?php
-// временно для ББТ
-if (isset($_COOKIE['period']) && $_COOKIE['period'] != '`date` >= CURDATE()' && strpos($_COOKIE['period'], ' = ') === false && strpos($_COOKIE['period'], '>=C') === false) {
-	$_COOKIE['period'] = implode(' = ', explode('=', $_COOKIE['period']));
-}
-if ($_COOKIE['period'] == '`date` >=CURDATE()')
-	$_COOKIE['period'] = '`date` >= CURDATE()';
-
-
 session_start();
 // get connect to db
 require_once 'db.php';
@@ -32,24 +24,21 @@ $footer_connect .= '<script src="/libs/jquery.js" type="text/javascript"></scrip
 $footer_connect .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>';
 $footer_connect .= '<script src="/js/script.js" type="text/javascript"></script>';
 
-
-
 // exist pages array
-$pages['analitic'] = '/analitic.php';
-$pages['commands'] = '/commands.php';
-$pages['command'] = '/command.php';
-$pages['partners'] = '/partners.php';
-$pages['partner'] = '/partner.php';
-$pages['clients'] = '/clients.php';
-$pages['client'] = '/client.php';
-$pages['view'] = '/view.php';
-$pages['finance'] = '/finance.php';
-$pages['finance_view'] = '/finance_view.php';
-$pages['profile'] = '/profile.php';
-$pages['settings'] = '/settings.php';
-$pages['entrance'] = '/'; # because '/index.php' == '/'
-$pages['forgot_pass'] = '/forgot_password.php';
+$pages = array(
+	'analitic' => '/analitic.php',
+	'commands' => '/commands.php',
+	'partners' => '/partners.php',
+	'clients' => '/clients.php',
+	'view' => '/view.php',
+	'finance' => '/finance.php',
+	'profile' => '/profile.php',
+	'settings' => '/settings.php',
+	'entrance' => '/', # because '/index.php' == '/'
+	'forgot_pass' => '/forgot_password.php',
+);
 
+// define user
 $user = false;
 if (isset($_SESSION['logged']))
 	$user = $_SESSION['logged'];
@@ -88,27 +77,15 @@ if ($pages['analitic'] == $active_page) {
 } elseif ($pages['commands'] == $active_page) {
 	$title = 'Команды';
 	$add_class_to_content_wrapper = 'grey_bg';
-} elseif ($pages['command'] == $active_page) {
-	$title = 'Карточка команды';
-	$add_class_to_content_wrapper = 'grey_bg';
 } elseif ($pages['partners'] == $active_page) {
 	$title = 'Партнеры';
-	$add_class_to_content_wrapper = 'grey_bg';
-} elseif ($pages['partner'] == $active_page) {
-	$title = 'Партнер';
 	$add_class_to_content_wrapper = 'grey_bg';
 } elseif ($pages['clients'] == $active_page) {
 	$title = 'Клиенты';
 	$add_class_to_content_wrapper = 'grey_bg';
-} elseif ($pages['client'] == $active_page) {
-	$title = 'Клиент';
-	$add_class_to_content_wrapper = 'grey_bg';
 } elseif ($pages['view'] == $active_page) {
 	$add_class_to_content_wrapper = 'grey_bg';
 } elseif ($pages['finance'] == $active_page) {
-	$title = 'Финансы';
-	$add_class_to_content_wrapper = 'grey_bg';
-} elseif ($pages['finance_view'] == $active_page) {
 	$title = 'Финансы';
 	$add_class_to_content_wrapper = 'grey_bg';
 } elseif ($pages['profile'] == $active_page) {
@@ -196,34 +173,13 @@ if (($pages['partners'] == $active_page || $pages['partner'] == $active_page) &&
 }
 
 
-// bread cumbs
-if ($pages['view'] == $active_page)
-	require './php/bread_cumbs.php';
-else {
+// clear bread cumbs
+if ($pages['view'] != $active_page) {
 	$_SESSION['bread_cumbs'] = '';
 	$_SESSION['bread_array'] = array();
 	$_SESSION['bread_names'] = array();
 	$_SESSION['bread_cumbs_last_update'] = '';
 	$_SESSION['prev_bread_cumbs'] = '';
-}
-
-// 404 if user not exist
-if ($pages['view'] == $active_page) {
-	if ($view_position != 'client') {
-		$db->set_where(['id' => $id]);
-		$db->set_table('users');
-		$u = $db->select('i');
-
-		if (!$u || $u->num_rows === 0)
-			header('Location: http://partner.bbt-online.ru/404/');
-	} else {
-		$db_shop->set_where(['ID' => $id]);
-		$db_shop->set_table('wp_users');
-		$u = $db_shop->select('i');
-
-		if (!$u || $u->num_rows === 0)
-			header('Location: http://partner.bbt-online.ru/404/');
-	}
 }
 
 // имя пользователя в header'е
@@ -244,21 +200,8 @@ if ($role == 'Партнер') {
 }
 
 
-
-// TEMP
-function printCalendar() { ?>
-	<div class="calendar_overlay"></div>
-	<div class="calendar">
-	<div class="prev_cal"><img src="/img/back_calendar.svg" alt="back arrow"></div>
-	<div class="next_cal"><img src="/img/next_calendar.svg" alt="next_caxt arrow"></div>
-
-	<div class="cal_col cal_col_1"></div>
-	<div class="cal_col cal_col_2"></div>
-	<div class="cal_col cal_col_3"></div>
-
-	<div class="today_cal">Сегодня</div>
-	<div class="reset_cal">Сбросить</div>
-	<button class="done_cal">Показать</button>
-</div>
-<?php }
-
+if (isset($_COOKIE['period']) && $_COOKIE['period'] != '`date` >= CURDATE()' && strpos($_COOKIE['period'], ' = ') === false && strpos($_COOKIE['period'], '>=C') === false) {
+	$_COOKIE['period'] = implode(' = ', explode('=', $_COOKIE['period']));
+}
+if ($_COOKIE['period'] == '`date` >=CURDATE()')
+	$_COOKIE['period'] = '`date` >= CURDATE()';
