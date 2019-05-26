@@ -13,13 +13,13 @@ $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf::class;
 \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('Pdf', $class);
 
 
-if (isset($_GET['test'])) {
-	$date_create = new DateTime("first day of this month");
+if (true) {
+	$date_create = new DateTime("first day of this week");
 	$date = $date_create->format('Y-m-d');
 	$date_act_from = $date_create->format('d.m.Y');
 	$date_smth = new DateTime("today");
 	$date_act = $date_smth->format('d.m.Y');
-	$finish_date = new DateTime("last day of this month");
+	$finish_date = new DateTime("last day of this week");
 	$finish_date = $finish_date->format('d.m.Y');
 } else {
 	$date_create = new DateTime("first day of last month");
@@ -301,16 +301,9 @@ foreach ($users as $user) {
 		$phpWord->setValue('city', $user['city']);
 		$phpWord->setValue('name', $user['name']);
 		$phpWord->setValue('director', $info['general_name']);
-		$phpWord->setValue('base', '"Основание"');
+		$phpWord->setValue('base', $info['organizator_base']);
 		$phpWord->setValue('from', $date_act_from);
 		$phpWord->setValue('to', $date_act);
-		$phpWord->setValue('info', "{$user['name']}
-		ИНН/КПП   {$info['general_inn_kpp']}
-		{$info['general_address']}
-		Р/с {$info['bank_bill']} в {$info['bank_name']}
-		БИК {$info['bank_bik']}
-		к/с {$info['bank_chet']}
-		");
 
 
 		$phpWord->cloneRow('SR', count($act_content));
@@ -340,15 +333,7 @@ foreach ($users as $user) {
 		$parent = $db->select('i')->fetch_array(MYSQLI_ASSOC);
 		$parent_info = unserialize($parent['data']);
 
-		if (false) {
-			$phpWord = new \PhpOffice\PhpWord\TemplateProcessor('samples/partner_act.docx');
-			$phpWord->setValue('number', 1);
-			$phpWord->setValue('date', $date_act);
-			$phpWord->setValue('number2', 1);
-		} else {
-			$phpWord = new \PhpOffice\PhpWord\TemplateProcessor('samples/partner_act_without_contract.docx');
-		}
-		
+		$phpWord = new \PhpOffice\PhpWord\TemplateProcessor('samples/partner_act.docx');
 		
 		$phpWord->setValue('city', $user['city']);
 		$phpWord->setValue('current_date', $date_act);

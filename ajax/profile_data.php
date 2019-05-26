@@ -49,6 +49,7 @@ elseif ($_POST['status'] == 'Команда')
 		'organizator_position' => $_POST['organizator_position'],
 		'organizator_phone' => $_POST['organizator_phone'],
 		'organizator_email' => $_POST['organizator_email'],
+		'organizator_base' => $_POST['organizator_base'],
 		'accountant_name' => $_POST['accountant_name'],
 		'accountant_phone' => $_POST['accountant_phone'],
 		'accountant_email' => $_POST['accountant_email'],

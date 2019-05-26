@@ -105,7 +105,8 @@ if ($pages['analitic'] == $active_page) {
 	$add_class_to_content_wrapper = '';
 }
 // append info
-$title .= ' — Партнерская программа ББТ';
+$title_post_text = ' — Партнерская программа ББТ';
+$title .= $title_post_text;
 
 // save user_id
 $user_id = explode('|', $user)[2];

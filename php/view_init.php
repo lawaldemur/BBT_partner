@@ -1,5 +1,5 @@
 <?php
-include 'header.php';
+require 'functions.php';
 require 'db_shop.php';
 // get id, bread cumbs and etc
 require './php/bread_cumbs.php';
@@ -137,6 +137,8 @@ if ($view_position != 'client') {
 	}
 }
 
+$title = $view['name'] . $title_post_text;
+include 'header.php';
 
 $role = $view['position'];
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;

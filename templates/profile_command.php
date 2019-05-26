@@ -125,6 +125,10 @@
 				<span class="field_desc">Эл. почта</span>
 				<input type="text" id="organizator_email" value="<?php echo $data['organizator_email']; ?>">
 			</div>
+			<div class="field field_50">
+				<span class="field_desc">Основание</span>
+				<input type="text" id="organizator_base" value="<?php echo $data['organizator_base']; ?>">
+			</div>
 		</div>
 	</div>
 

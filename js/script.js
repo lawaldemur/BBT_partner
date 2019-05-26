@@ -1030,6 +1030,7 @@ jQuery(document).ready(function($) {
 		var organizator_position = $('#organizator_position').val();
 		var organizator_phone = $('#organizator_phone').val();
 		var organizator_email = $('#organizator_email').val();
+		var organizator_base = $('#organizator_base').val();
 		var accountant_name = $('#accountant_name').val();
 		var accountant_phone = $('#accountant_phone').val();
 		var accountant_email = $('#accountant_email').val();
@@ -1055,6 +1056,7 @@ jQuery(document).ready(function($) {
 				$('#bank_chet').val() == bank_chet &&
 				$('#bank_bik').val() == bank_bik &&
 				$('#organizator_name').val() == organizator_name &&
+				$('#organizator_base').val() == organizator_base &&
 				$('#organizator_position').val() == organizator_position &&
 				// !(!$('#organizator_phone').val() == organizator_phone &&
 				// (rePhone.test($('#organizator_phone').val()))) &&
@@ -1111,6 +1113,7 @@ jQuery(document).ready(function($) {
 					organizator_position: $('#organizator_position').val(),
 					organizator_phone: $('#organizator_phone').val(),
 					organizator_email: $('#organizator_email').val(),
+					organizator_base: $('#organizator_base').val(),
 					accountant_name: $('#accountant_name').val(),
 					accountant_phone: $('#accountant_phone').val(),
 					accountant_email: $('#accountant_email').val(),
@@ -1145,6 +1148,7 @@ jQuery(document).ready(function($) {
 				organizator_position = $('#organizator_position').val();
 				organizator_phone = $('#organizator_phone').val();
 				organizator_email = $('#organizator_email').val();
+				organizator_base = $('#organizator_base').val();
 				accountant_name = $('#accountant_name').val();
 				accountant_phone = $('#accountant_phone').val();
 				accountant_email = $('#accountant_email').val();
