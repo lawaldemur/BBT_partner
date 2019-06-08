@@ -1,6 +1,10 @@
 <?php
-if (!(isset($_GET['code']) && $_GET['code'] == '9e2d002473ba9abbtonlinea88eada87c25188396'))
+// access check
+define('ACCESS_CODE', parse_ini_file('/home/h809274500/partner.bbt-online.ru/php/secure.ini')['CREATE_ACCESS_CODE']);
+
+if (!(isset($_GET['code']) && $_GET['code'] == ACCESS_CODE))
 	exit('access denied');
+
 
 require_once '../db.php';
 require_once '../db_shop.php';
