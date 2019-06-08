@@ -70,9 +70,7 @@
 							table_th('Сумма<br>вознагражд.', 'summ_get', 'children');
 							table_th('Выплаты', 'summ_wait', 'children');
 						} elseif ($view_position == 'partner') {
-							table_th('Имя клиента', 'name', 'children', 'padding-left: 20px; width: 700px;');
-							table_th('Кол-во<br>клиентов', 'clients', 'children', 'width: 80px;');
-							table_th('Сумма<br>продаж', 'sold', 'children', 'width: 80px;');
+							table_th('Имя клиента', 'name', 'children', 'padding-left: 20px; width: 860px;');
 							table_th('Сумма покупок', 'bought', 'children', 'width: 100px;');
 						}
 						?>

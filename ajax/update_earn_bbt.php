@@ -2,6 +2,7 @@
 include '../db.php';
 require '../php/access.php';
 include 'makePeriod.php';
+
 $per = $_POST['period'];
 $_POST['period'] = makePeriod($_POST['period']);
 $format = $_POST['format'];

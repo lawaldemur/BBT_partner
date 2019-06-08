@@ -12,16 +12,16 @@ if ($role == 'ББТ') {
 	$db->set_table('sold');
 	$db->set_where(['not_equal' => ['to_partner_id', 0], 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
 
-	$n1 = intval($db->select('i'.($format == 'all' ? '' : "s"), ['SUM(to_bbt)'])->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)']);
+	$n1 = $db->select('i'.($format == 'all' ? '' : "s"), ['SUM(to_bbt)'])->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)'];
 
 	$db->set_where(['to_partner_id' => 0, 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
-	$n2 = intval($db->select('i'.($format == 'all' ? '' : "s"), ['SUM(to_bbt)'])->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)']);
+	$n2 = $db->select('i'.($format == 'all' ? '' : "s"), ['SUM(to_bbt)'])->fetch_array(MYSQLI_ASSOC)['SUM(to_bbt)'];
 } else {
 	$role_l = $role == 'Команда' ? 'command' : 'partner';
 
 	$db->set_table('sold');
 	$db->set_where(['to_'.$role_l.'_id' => $user_id, 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
-	$n = intval($db->select('i'.($format == 'all' ? '' : "s"), ["SUM(to_$role_l)"])->fetch_array(MYSQLI_ASSOC)["SUM(to_$role_l)"]);
+	$n = $db->select('i'.($format == 'all' ? '' : "s"), ["SUM(to_$role_l)"])->fetch_array(MYSQLI_ASSOC)["SUM(to_$role_l)"];
 }
 
 // таблица заработков по месяцам для ББТ

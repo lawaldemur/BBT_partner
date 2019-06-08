@@ -5,7 +5,7 @@ require 'db_shop.php';
 $sort = $_COOKIE['sort'] ? $_COOKIE['sort'] : 'bydate';
 $rows = isset($_COOKIE['rows']) ? intval($_COOKIE['rows']) : 20;
 $period = $_COOKIE['period'] ? $_COOKIE['period'] : '`date` >= CURDATE()';
-$format = $_COOKIE['format'] ? $_COOKIE['format'] : 'all';
+$format = 'all';
 $types = '';
 $_POST['sortColumn'] = $sort == 'bydate' ? 'date' : 'name';
 $_POST['sortColumnType'] = 'default';

@@ -56,19 +56,7 @@ jQuery(document).ready(function($) {
 	chart.events.on("ready", function () {
 	  dateAxis.zoom({start:0.79, end:1});
 	});
-
-
-	// $('.tab_finance').click(function() {
-	// 	if ($(this).attr('data-col') == 'reports_for_command') {
-			
-	// 		uploadToBbt();
-	// 		$('.profit').removeClass('active_col_finance');
-	// 		$('.finance_row > .col-12:not(.profit, .reports_from_partner)').addClass('active_col_finance');
-
-	// 	} else {
-
-	// 	}
-	// });
+	
 	$('.tab_finance').click(function() {
 		if (!$(this).hasClass('active_tab_finance')) {
 			$('.active_tab_finance').removeClass('active_tab_finance');
@@ -166,7 +154,6 @@ jQuery(document).ready(function($) {
 		        return xhr;
 		    },
 		    success: function (event) {
-		    	console.log(event);
 		    	var upload_ident = Date.now();
 		    	$('.progress_finance_open').after('<button id="'+upload_ident+'" class="finance_upload_report ready_upload"><img src="/img/check.svg" width="10" height="8"> Готово</button>').remove();
 
@@ -192,7 +179,6 @@ jQuery(document).ready(function($) {
 	$('.finance_open_report').on('click', function() {
 		$('#overlay_document').show();
 		$('#overlay_document .name').text($(this).data('document'));
-		console.log($(this).parent().parent());
 		$('#overlay_document .download a').attr('href', $(this).data('file'));	
 	});
 
@@ -229,10 +215,7 @@ jQuery(document).ready(function($) {
 			res = res.split('|');
 			
 			$('.fin_m_span_dogovor').html(res[0] + ' &#8381;');
-
-			// update graph
-			// if (!noUpdateChart)
-				chart.data = JSON.parse(res[1]);
+			chart.data = JSON.parse(res[1]);
 		});
 		
 	}
@@ -246,6 +229,19 @@ jQuery(document).ready(function($) {
 			$(this).addClass('change_active');
 
 			$('.page_wrapper').after('<script>document.cookie = "period='+$('.change_active').attr('data-val')+'";</script>');
+
+			if ($(this).is('#today') || $(this).is('#yesterday') || $(this).is('#week')) {
+				$('#month_drop_list option[value="1"], #month_drop_list option[value="2"]').attr('disabled', 'disabled');
+				$('#month_drop_list option[value="0"]').removeAttr('disabled');
+			} else if ($(this).is('#month')) {
+				$('#month_drop_list option[value="2"]').attr('disabled', 'disabled');
+				$('#month_drop_list option[value="0"], #month_drop_list option[value="1"]').removeAttr('disabled');
+			} else {
+				$('#month_drop_list option').removeAttr('disabled');
+			}
+
+			if ($('#month_drop_list option:selected').attr('disabled') == 'disabled')
+				$('#month_drop_list option[value="0"]').prop({selected: true});
 
 			updateEarn(true);
 		}		
@@ -261,7 +257,7 @@ jQuery(document).ready(function($) {
 		$('.calendar_overlay').hide();
 		$('.calendar').css('display', 'none');
 
-		$('.page_wrapper').after('<script>document.cookie = "calendarText='+$('.custom_date_change span').text()+'";</script>');
+		$('.page_wrapper').after('<script>document.cookie = "calendarText='+encodeURI($('.custom_date_change span').text())+'";</script>');
 		$('.page_wrapper').after('<script>document.cookie = "period='+$('.custom_date_change').attr('data-val')+'";</script>');
 
 		updateEarn(true);

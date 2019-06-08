@@ -92,14 +92,8 @@ else
 			if ($meta_array)
 				$client['picture'] = 'http://bbt-online.ru/wp-content/uploads/' . end(explode('/', $meta_array->fetch_array(MYSQLI_ASSOC)['guid']));
 		}
-		if ($client['picture'] == '')
+		if ($client['picture'] == 'http://bbt-online.ru/wp-content/uploads/')
 			$client['picture'] = '/avatars/avatar.png';
-
-		// get clients
-		$db_shop->set_table('wp_users');
-		$db_shop->set_where(['parent' => $client['code']]);
-		$clients = $db_shop->select('s');
-		$client['clients'] = $clients->num_rows;
 
 		// get bought summ
 		$client['bought'] = 0;
@@ -110,17 +104,6 @@ else
 		if ($bought)
 			foreach ($bought as $value)
 				$client['bought'] += $value['summ'];
-		
-		// get sold summ
-		$client['sold'] = 0;
-		if ($clients)
-			foreach ($clients as $value) {
-				$db->set_where(['client' => $value['ID'], 'date' => $period]);
-				$bought = $db->select('i');
-				if ($bought)
-				foreach ($bought as $value2)
-					$client['sold'] += $value2['summ'];
-			}
 
 		if ($_POST['search'] != '' && stristr(strtolower($client['parent']), strtolower($_POST['search'])) === FALSE &&
 		stristr(strtolower($client['first_name'].' '.$client['last_name']), strtolower($_POST['search'])) === FALSE)

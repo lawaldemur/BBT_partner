@@ -9,8 +9,18 @@ if (!access($_POST['id'], $db))
 
 $name = $_POST['name'];
 $region = $_POST['region'];
-$get_digital = $_POST['get_digital'];
-$get_audio = $_POST['get_audio'];
+$get_digital = intval($_POST['get_digital']);
+$get_audio = intval($_POST['get_audio']);
+
+if ($get_audio < 0)
+	$get_audio = 0;
+elseif ($get_audio > 100)
+	$get_audio = 100;
+if ($get_digital < 0)
+	$get_digital = 0;
+elseif ($get_digital > 100)
+	$get_digital = 100;
+
 $email = $_POST['email'];
 // definite parent
 $db->set_table('users');

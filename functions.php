@@ -206,3 +206,7 @@ if (isset($_COOKIE['period']) && $_COOKIE['period'] != '`date` >= CURDATE()' && 
 }
 if ($_COOKIE['period'] == '`date` >=CURDATE()')
 	$_COOKIE['period'] = '`date` >= CURDATE()';
+
+
+// for safari
+$_COOKIE['calendarText'] = urldecode($_COOKIE['calendarText']);

@@ -15,7 +15,8 @@ jQuery(document).ready(function($) {
 			$(this).removeClass('error_input');
 	});
 
-	var rePhone = /^((8|\+7)[\-]?)?(\(?\d{3}\)?[\-]?)?[\d\-]{7,10}$/; // regexp phone numer
+	// var rePhone = /^((8|\+7)[\-]?)?(\(?\d{3}\)?[\-]?)?[\d\-]{7,10}$/; // regexp phone numer
+	var rePhone = /^[\d ()+-]+$/; // regexp phone numer
 	var reEmail = /^[-._a-z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/; // regexp email
 
 	// header profile dropdown
@@ -68,6 +69,12 @@ jQuery(document).ready(function($) {
 		
 	});
 	// END logout
+
+	$('#new_get_digital, #new_get_audio, #get_digital, #get_audio').on('keypress', function(event) {
+		var ch = String.fromCharCode(event.which);
+		if (!(/[0-9]/.test(ch)) || parseInt($(this).val() + ch) > 100 || $(this).val().length > 2)
+			event.preventDefault();
+	});
 
 	
 	// ENTRANCE PAGE ==========================================================
@@ -794,6 +801,11 @@ jQuery(document).ready(function($) {
 		});
 
 		$('#change_pass1, #change_pass2').on('input', function() {
+			if ($('#change_pass1').val() == '' && $('#change_pass2').val() == '') {
+				$('#change_pass_submit').attr('disabled', 'disabled');
+				return;
+			}
+
 			if ($('#change_pass1').val() != pass1 && $('#change_pass2').val() != pass2)
 				$('#change_pass_submit').removeAttr('disabled');
 			else
@@ -914,10 +926,8 @@ jQuery(document).ready(function($) {
 
 			if ($('#general_name').val() == general_name &&
 				$('#general_address').val() == general_address &&
-				!(!$('#general_phone').val() == general_phone &&
-				(rePhone.test($('#general_phone').val()))) &&
-				!(!$('#general_email').val() == general_email &&
-				(reEmail.test($('#general_email').val()))) &&
+				$('#general_phone').val() == general_phone &&
+				$('#general_email').val() == general_email &&
 				$('#general_ogrn').val() == general_ogrn &&
 				$('#general_inn_kpp').val() == general_inn_kpp &&
 				$('#bank_name').val() == bank_name &&
@@ -926,28 +936,49 @@ jQuery(document).ready(function($) {
 				$('#bank_bik').val() == bank_bik &&
 				$('#organizator_name').val() == organizator_name &&
 				$('#organizator_position').val() == organizator_position &&
-				!(!$('#organizator_phone').val() == organizator_phone &&
-				(rePhone.test($('#organizator_phone').val()))) &&
-				!(!$('#organizator_email').val() == organizator_email &&
-				(reEmail.test($('#organizator_email').val()))) &&
+				$('#organizator_phone').val() == organizator_phone &&
+				$('#organizator_email').val() == organizator_email &&
 				$('#accountant_name').val() == accountant_name &&
-				!(!$('#accountant_phone').val() == accountant_phone &&
-				(rePhone.test($('#accountant_phone').val()))) &&
-				!(!$('#accountant_email').val() == accountant_email &&
-				(reEmail.test($('#accountant_email').val()))) &&
+				$('#accountant_phone').val() == accountant_phone &&
+				$('#accountant_email').val() == accountant_email &&
 				$('#manager_name').val() == manager_name &&
-				!(!$('#manager_phone').val() == manager_phone &&
-				(rePhone.test($('#manager_phone').val()))) &&
-				!(!$('#manager_email').val() == manager_email &&
-				(reEmail.test($('#manager_email').val())))) {
+				$('#manager_phone').val() == manager_phone &&
+				$('#manager_email').val() == manager_email) {
 				$('#profile_submit').attr('disabled', 'disabled');
 			} else {
 				$('#profile_submit').removeAttr('disabled');
 			}
 		});
 
+		$('#general_ogrn, #general_inn_kpp, #bank_bill, #bank_chet, #bank_bik').on('keypress', function(event) {
+			var ch = String.fromCharCode(event.which);
+			if (!(/[0-9]/.test(ch)))
+				event.preventDefault();
+		});
+
+
 		// save data
 		$('#profile_submit').click(function() {
+			if ($('#general_phone').val() != '' && !rePhone.test($('#general_phone').val()))
+				$('#general_phone').addClass('error_input');
+			if ($('#general_email').val() != '' && !reEmail.test($('#general_email').val()))
+				$('#general_email').addClass('error_input');
+			if ($('#organizator_phone').val() != '' && !rePhone.test($('#organizator_phone').val()))
+				$('#organizator_phone').addClass('error_input');
+			if ($('#organizator_email').val() != '' && !reEmail.test($('#organizator_email').val()))
+				$('#organizator_email').addClass('error_input');
+			if ($('#accountant_phone').val() != '' && !rePhone.test($('#accountant_phone').val()))
+				$('#accountant_phone').addClass('error_input');
+			if ($('#accountant_email').val() != '' && !reEmail.test($('#accountant_email').val()))
+				$('#accountant_email').addClass('error_input');
+			if ($('#manager_phone').val() != '' && !rePhone.test($('#manager_phone').val()))
+				$('#manager_phone').addClass('error_input');
+			if ($('#manager_email').val() != '' && !reEmail.test($('#manager_email').val()))
+				$('#manager_email').addClass('error_input');
+
+			if ($('.error_input').length > 0)
+				return;
+
 			$.ajax({
 				url: '/ajax/profile_data.php',
 				type: 'POST',
@@ -1043,10 +1074,6 @@ jQuery(document).ready(function($) {
 				$('#general_name').val() == general_name &&
 				$('#general_short_name').val() == general_short_name &&
 				$('#general_address').val() == general_address &&
-				// !(!$('#general_phone').val() == general_phone &&
-				// (rePhone.test($('#general_phone').val()))) &&
-				// !(!$('#general_email').val() == general_email &&
-				// (reEmail.test($('#general_email').val()))) &&
 				$('#general_ogrn').val() == general_ogrn &&
 				$('#general_inn_kpp').val() == general_inn_kpp &&
 				$('#dogovor_number').val() == dogovor_number &&
@@ -1058,20 +1085,8 @@ jQuery(document).ready(function($) {
 				$('#organizator_name').val() == organizator_name &&
 				$('#organizator_base').val() == organizator_base &&
 				$('#organizator_position').val() == organizator_position &&
-				// !(!$('#organizator_phone').val() == organizator_phone &&
-				// (rePhone.test($('#organizator_phone').val()))) &&
-				// !(!$('#organizator_email').val() == organizator_email &&
-				// (reEmail.test($('#organizator_email').val()))) &&
 				$('#accountant_name').val() == accountant_name &&
-				// !(!$('#accountant_phone').val() == accountant_phone &&
-				// (rePhone.test($('#accountant_phone').val()))) &&
-				// !(!$('#accountant_email').val() == accountant_email &&
-				// (reEmail.test($('#accountant_email').val()))) &&
 				$('#manager_name').val() == manager_name &&
-				// !(!$('#manager_phone').val() == manager_phone &&
-				// (rePhone.test($('#manager_phone').val()))) &&
-				// !(!$('#manager_email').val() == manager_email &&
-				// (reEmail.test($('#manager_email').val())))
 				$('#general_phone').val() == general_phone &&
 				$('#general_email').val() == general_email &&
 				$('#organizator_phone').val() == organizator_phone &&
@@ -1087,8 +1102,34 @@ jQuery(document).ready(function($) {
 			}
 		});
 
+		$('#dogovor_number, #general_ogrn, #general_inn_kpp, #bank_bill, #bank_chet, #bank_bik').on('keypress', function(event) {
+			var ch = String.fromCharCode(event.which);
+			if (!(/[0-9]/.test(ch)))
+				event.preventDefault();
+		});
+
 		// save data
 		$('#profile_submit').click(function() {
+			if ($('#general_phone').val() != '' && !rePhone.test($('#general_phone').val()))
+				$('#general_phone').addClass('error_input');
+			if ($('#general_email').val() != '' && !reEmail.test($('#general_email').val()))
+				$('#general_email').addClass('error_input');
+			if ($('#organizator_phone').val() != '' && !rePhone.test($('#organizator_phone').val()))
+				$('#organizator_phone').addClass('error_input');
+			if ($('#organizator_email').val() != '' && !reEmail.test($('#organizator_email').val()))
+				$('#organizator_email').addClass('error_input');
+			if ($('#accountant_phone').val() != '' && !rePhone.test($('#accountant_phone').val()))
+				$('#accountant_phone').addClass('error_input');
+			if ($('#accountant_email').val() != '' && !reEmail.test($('#accountant_email').val()))
+				$('#accountant_email').addClass('error_input');
+			if ($('#manager_phone').val() != '' && !rePhone.test($('#manager_phone').val()))
+				$('#manager_phone').addClass('error_input');
+			if ($('#manager_email').val() != '' && !reEmail.test($('#manager_email').val()))
+				$('#manager_email').addClass('error_input');
+
+			if ($('.error_input').length > 0)
+				return;
+
 			$.ajax({
 				url: '/ajax/profile_data.php',
 				type: 'POST',
@@ -1265,10 +1306,8 @@ jQuery(document).ready(function($) {
 			if ($('#general_name').val() == general_name &&
 				$('#general_soul_name').val() == general_soul_name &&
 				$('#general_address').val() == general_address &&
-				!(!$('#contact_phone').val() == contact_phone &&
-				(rePhone.test($('#contact_phone').val()))) &&
-				!(!$('#contact_email').val() == contact_email &&
-				(reEmail.test($('#contact_email').val()))) &&
+				$('#contact_phone').val() == contact_phone &&
+				$('#contact_email').val() == contact_email &&
 				$('#pasport_seria').val() == pasport_seria &&
 				$('#pasport_number').val() == pasport_number &&
 				$('#pasport_date').val() == pasport_date &&
@@ -1285,8 +1324,22 @@ jQuery(document).ready(function($) {
 			}
 		});
 
+		$('#pasport_seria, #pasport_number, #other_snils, #other_inn, #bank_bill, #bank_chet, #bank_bik').on('keypress', function(event) {
+			var ch = String.fromCharCode(event.which);
+			if (!(/[0-9]/.test(ch)))
+				event.preventDefault();
+		});
+
 		// save data
 		$('#profile_submit').click(function() {
+			if ($('#contact_phone').val() != '' && !rePhone.test($('#contact_phone').val()))
+				$('#contact_phone').addClass('error_input');
+			if ($('#contact_email').val() != '' && !reEmail.test($('#contact_email').val()))
+				$('#contact_email').addClass('error_input');
+
+			if ($('.error_input').length > 0)
+				return;
+
 			$.ajax({
 				url: '/ajax/profile_data.php',
 				type: 'POST',

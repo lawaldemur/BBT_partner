@@ -83,12 +83,13 @@ jQuery(document).ready(function($) {
 	function uploadAllBooks() {
 		var format = '';
 		if (!$('#digital.choose').hasClass('choose_active') && !$('#audio.choose').hasClass('choose_active')) {
-			$('.choose').toggleClass('choose_active');
 			format = 'all';
 		} else if ($('#digital.choose').hasClass('choose_active') && $('#audio.choose').hasClass('choose_active'))
 			format = 'all';
 		else
 			format = $('.choose_active').attr('id');
+		if ($('.active_table_row').attr('data-table') == 'all')
+			format = 'all';
 
 		var period = $('.change_active').attr('data-val');
 
@@ -166,7 +167,6 @@ jQuery(document).ready(function($) {
 				$('.active_table_row table').after('<script>document.cookie = "sort='+sortType+'";</script>');
 				$('.active_table_row table').after('<script>document.cookie = "period='+period+'";</script>');
 				$('.active_table_row table').after('<script>document.cookie = "rows='+rows_size+'";</script>');
-				$('.active_table_row table').after('<script>document.cookie = "format='+format+'";</script>');
 			});
 			
 		}
@@ -192,7 +192,7 @@ jQuery(document).ready(function($) {
 		$('.calendar_overlay').hide();
 		$('.calendar').css('display', 'none');
 
-		$('.page_wrapper').after('<script>document.cookie = "calendarText='+$('.custom_date_change span').text()+'";</script>');
+		$('.page_wrapper').after('<script>document.cookie = "calendarText='+encodeURI($('.custom_date_change span').text())+'";</script>');
 		$('.page_wrapper').after('<script>document.cookie = "period='+$('.custom_date_change').attr('data-val')+'";</script>');
 
 		uploadAllBooks();

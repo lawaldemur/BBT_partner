@@ -2553,19 +2553,7 @@ img[alt="active_search_icon"] {
 	width: 320px;
 }
 #users_table[data-position="client"][data-role="ББТ"] tr > *:nth-child(2) {
-	width: 380px;
-}
-
-
-
-#users_table[data-role="ББТ"]:not([data-position="client"]) tr > *:nth-child(1) {
-	width: 550px;
-}
-#users_table[data-position="client"][data-role="ББТ"] tr > *:nth-child(1) {
-	width: 320px;
-}
-#users_table[data-position="client"][data-role="ББТ"] tr > *:nth-child(2) {
-	width: 380px;
+	width: 515px;
 }
 
 
@@ -3231,4 +3219,8 @@ table[data-position="partner"] tr > *:nth-child(1) {
 }
 #users_table[data-position="client"][data-role="Партнер"] tr > *:nth-child(1) {
 	width: 880px;
+}
+
+.active_table_row[data-table="all"] .choose_format {
+	display: none !important;
 }

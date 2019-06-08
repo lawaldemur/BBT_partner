@@ -19,8 +19,6 @@
 						<?php
 						table_th('Имя клиента <span class="sort_upper sortColumn_type">&#9660;</span>', 'name');
 						table_th('Принадлежность', 'parent');
-						table_th('Кол-во<br>клиентов', 'clients', 'table_align_center');
-						table_th('Сумма<br>продаж', 'sold', 'table_align_center');
 						table_th('Сумма<br>покупок', 'bought', 'table_align_center');
 						?>
 					</tr>

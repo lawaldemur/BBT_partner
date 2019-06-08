@@ -5,8 +5,8 @@
 	<?php $sql_date = "DATE(`date`) = DATE(NOW() - INTERVAL 1 DAY)"; ?>
 	<div class="change <?=($period == $sql_date) ? 'change_active' : '';?>" id="yesterday" data-val="<?=$sql_date?>">Вчера</div>
 	
-	<?php $sql_date = "DATE(`date`) = DATE(NOW() - INTERVAL 1 DAY)"; ?>
-	<div class="change <?=($period == "WEEK(`date`) = WEEK(CURDATE())") ? 'change_active' : '';?>" id="week" data-val="<?=$sql_date?>">Неделя</div>
+	<?php $sql_date = "WEEK(`date`) = WEEK(CURDATE())"; ?>
+	<div class="change <?=($period == $sql_date) ? 'change_active' : '';?>" id="week" data-val="<?=$sql_date?>">Неделя</div>
 	
 	<?php $sql_date = "MONTH(`date`) = MONTH(CURDATE())"; ?>
 	<div class="change <?=($period == $sql_date) ? 'change_active' : '';?>" id="month" data-val="<?=$sql_date?>">Месяц</div>

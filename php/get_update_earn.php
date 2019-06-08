@@ -4,26 +4,28 @@ require '../php/access.php';
 require 'makePeriod.php';
 
 $id = $_POST['id'];
+$per = $_POST['period'];
 $_POST['period'] = makePeriod($_POST['period']);
-$period = $_POST['period'];
 $format = $_POST['format'];
-$_POST['position'] = 'command';
+if ($_POST['position'] != 'partner')
+	$_POST['position'] = 'command';
+
 
 if (!access(intval($_POST['id']), $db))
 	exit('отказано в доступе');
 
 $db->set_table('sold');
-$db->set_where(['to_'.$_POST['position'].'_id' => $id, 'date' => $period] + ($format == 'all' ? [] : ['format' => $format]));
+$db->set_where(['to_'.$_POST['position'].'_id' => $id, 'date' => $per] + ($format == 'all' ? [] : ['format' => $format]));
 $result_on_d = $db->select('i'.($format == 'all' ? '' : 's'), ['SUM(to_'.$_POST['position'].')']);
+$result_on_d = floatval($result_on_d->fetch_array(MYSQLI_ASSOC)['SUM(to_'.$_POST['position'].')']);
 
-echo $result_on_d ? $result_on_d->fetch_array(MYSQLI_ASSOC)["SUM(to_{$_POST['position']})"] : 0;
-echo "|";
+echo $result_on_d."|";
 // graph info
 $period = explode('\'', $_POST['period']);
 if ($_POST['graph'] == '0') {
 	$db->set_table('sold');
-	$db->set_where(['to_'.$_POST['position'].'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
-	$result = $db->select('i'.($format == 'all' ? '' : 's'), ['date', 'COUNT(id)', 'SUM(to_'.$_POST['position'].')'], ' GROUP BY date');
+	$db->set_where(['to_'.$_POST['position'].'_id' => $id, 'date' => $per] + ($format == 'all' ? [] : ['format' => $format]));
+	$result = $db->select('i'.($format == 'all' ? '' : 's'), ['date', 'SUM(to_'.$_POST['position'].')'], ' GROUP BY date');
 	$array = [];
 
 	$start = $period[1];
@@ -33,10 +35,10 @@ if ($_POST['graph'] == '0') {
 	}
 
 	foreach ($result as $item)
-		$array[$item['date']][0] = $item['SUM(to_command)'];
+		$array[$item['date']][0] = floatval($item['SUM(to_'.$_POST['position'].')']);
 } elseif ($_POST['graph'] == '1') {
 	$db->set_table('sold');
-	$db->set_where(['to_'.$_POST['position'].'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
+	$db->set_where(['to_'.$_POST['position'].'_id' => $id, 'date' => $per] + ($format == 'all' ? [] : ['format' => $format]));
 	$result = $db->select('i'.($format == 'all' ? '' : 's'),
 		['WEEK(`date`,1) AS WEEK_NUM', 'DATE_SUB(`date`, INTERVAL WEEKDAY(`date`) DAY) AS WEEK_MON', 'SUM(to_'.$_POST['position'].')', 'DATE_SUB(`date`, INTERVAL (WEEKDAY(`date`)-6) DAY) AS WEEK_SUN', 'COUNT(id)'],
 		' GROUP BY WEEK_MON, WEEK_SUN, WEEK_NUM');
@@ -48,10 +50,10 @@ if ($_POST['graph'] == '0') {
 		$array[date('Y-m-d', $i)] = array(0);
 
 	foreach ($result as $item)
-		$array[$item['WEEK_MON']][0] = $item['SUM(to_command)'];
+		$array[$item['WEEK_MON']][0] = floatval($item['SUM(to_'.$_POST['position'].')']);
 } elseif ($_POST['graph'] == '2') {
 	$db->set_table('sold');
-	$db->set_where(['to_'.$_POST['position'].'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
+	$db->set_where(['to_'.$_POST['position'].'_id' => $id, 'date' => $per] + ($format == 'all' ? [] : ['format' => $format]));
 
 	$result = $db->select('i'.($format == 'all' ? '' : 's'),
 		["DATE_FORMAT(DATE_SUB(date, INTERVAL 0 MONTH), '%Y-%m-01') AS FirstDayOfMonth",
@@ -66,7 +68,7 @@ if ($_POST['graph'] == '0') {
 	}
 
 	foreach ($result as $item)
-		$array[$item['FirstDayOfMonth']][0] = $item['SUM(to_command)'];
+		$array[$item['FirstDayOfMonth']][0] = floatval($item['SUM(to_'.$_POST['position'].')']);
 }
 
 ksort($array);

@@ -174,7 +174,7 @@ jQuery(document).ready(function($) {
 		$('.calendar_overlay').hide();
 		$('.calendar').css('display', 'none');
 
-		$('.page_wrapper').after('<script>document.cookie = "calendarText='+$('.custom_date_change span').text()+'";</script>');
+		$('.page_wrapper').after('<script>document.cookie = "calendarText='+encodeURI($('.custom_date_change span').text())+'";</script>');
 		$('.page_wrapper').after('<script>document.cookie = "period='+$('.custom_date_change').attr('data-val')+'";</script>');
 
 		var sortColumn = $('.sortColumn_type').parent().data('column');

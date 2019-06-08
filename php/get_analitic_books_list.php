@@ -30,6 +30,7 @@ foreach ($books as $book) {
 		}
 		$book['summ'] = $total;
 	}
+	$book['count'] = $book['summ'] / $book['price'];
 
 	$array[] = $book;
 }

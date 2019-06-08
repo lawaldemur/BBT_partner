@@ -88,19 +88,6 @@ jQuery(document).ready(function($) {
 			$('.done_cal').slideToggle();
 	});
 
-	$('.done_cal').click(function() {
-		// if ($('.range_control').length != 2)
-		// 	return;
-
-		// $('.custom_date_change').attr('data-val', 'DATE(`date`) BETWEEN \''+$('.range_control').first().attr('data-date')+'\' AND \''+$('.range_control').last().attr('data-date')+'\'');
-		// $('.custom_date_change span').text($('.range_control').first().text() + ' ' + $('.range_control').first().parent().prev().prev().attr('data-month_name') + ' ' + $('.range_control').first().parent().prev().prev().attr('data-year') + ' – ' + $('.range_control').last().text() + ' ' + $('.range_control').last().parent().prev().prev().attr('data-month_name') + ' ' + $('.range_control').last().parent().prev().prev().attr('data-year'));
-
-		// $('.calendar_overlay').hide();
-		// $('.calendar').css('display', 'none');
-
-		// $('.page_wrapper').after('<script>document.cookie = "calendarText='+$('.custom_date_change span').text()+'";</script>');
-	});
-
 	$('.custom_date_change').click(function() {
 		$('.change_active').removeClass('change_active');
 		$(this).addClass('change_active');

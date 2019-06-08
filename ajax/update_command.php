@@ -14,6 +14,16 @@ $get_digital = intval($_POST['get_digital']);
 $command_email = $_POST['command_email'];
 $command_password = $_POST['command_password'];
 
+if ($get_audio < 0)
+	$get_audio = 0;
+elseif ($get_audio > 100)
+	$get_audio = 100;
+
+if ($get_digital < 0)
+	$get_digital = 0;
+elseif ($get_digital > 100)
+	$get_digital = 100;
+
 // if password not changed
 if ($command_password == '############') {
 	$db->set_table('users');

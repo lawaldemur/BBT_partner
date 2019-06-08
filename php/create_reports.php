@@ -1,4 +1,7 @@
 <?php
+if (!(isset($_GET['code']) && $_GET['code'] == '9e2d002473ba9abbtonlinea88eada87c25188396'))
+	exit('access denied');
+
 require_once '../db.php';
 require_once '../db_shop.php';
 require_once 'vendor/autoload.php';
@@ -30,8 +33,6 @@ if (true) {
 	$finish_date = new DateTime("last day of last month");
 	$finish_date = $finish_date->format('d.m.Y');
 }
-
-
 
 $folder = '../service/reports/'.$date_create->format('m.y').'_raw/';
 mkdir($folder);
@@ -106,6 +107,7 @@ foreach ($users as $user) {
 	$active_sheet->mergeCells("B1:G1");
 	$active_sheet->setCellValue('B1','ПРИЛОЖЕНИЕ № 1');
 	$active_sheet->getStyle("B1:G1")->getAlignment()->setWrapText(true);
+
 	if ($user['position'] == 'command') {
 		$active_sheet->mergeCells("B2:G2");
 		$active_sheet->getStyle("B2:G2")->getAlignment()->setWrapText(true);
@@ -305,7 +307,6 @@ foreach ($users as $user) {
 		$phpWord->setValue('from', $date_act_from);
 		$phpWord->setValue('to', $date_act);
 
-
 		$phpWord->cloneRow('SR', count($act_content));
 		for ($i=0; $i < count($act_content); $i++) { 
 			$phpWord->setValue('SR#'.($i + 1), $act_content[$i][0]);
@@ -326,7 +327,7 @@ foreach ($users as $user) {
 		$phpWord = \PhpOffice\PhpWord\IOFactory::load($folder_act.$file_act); 
 		$xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord , 'PDF');
 		$file_pdf = $file_name_act.'.pdf';
-		$xmlWriter->save($folder_act2.$file_pdf);
+		$xmlWriter->save($folder_act.$file_pdf);
 	} elseif ($user['position'] == 'partner') {
 		$db->set_table('users');
 		$db->set_where(['id' => $user['parent']]);
@@ -373,7 +374,7 @@ foreach ($users as $user) {
 		$phpWord = \PhpOffice\PhpWord\IOFactory::load($folder_act.$file_act); 
 		$xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord , 'PDF');
 		$file_pdf = $file_name_act.'.pdf';
-		$xmlWriter->save($folder_act2.$file_pdf);
+		$xmlWriter->save($folder_act.$file_pdf);
 	}
 
 	// save info to database
