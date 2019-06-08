@@ -26,7 +26,7 @@ elseif ($role == 'Партнер') {
 }
 
 $db->set_where($where);
-$db->set_table($sort == 'bydate' ? 'analitic' : 'analitic_bybook');
+$db->set_table('sold');
 $books = $db->select($types);
 
 require 'get_analitic_books_list.php';

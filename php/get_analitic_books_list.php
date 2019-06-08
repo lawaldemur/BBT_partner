@@ -2,6 +2,16 @@
 $array = array();
 if ($books)
 foreach ($books as $book) {
+	$key = $sort == 'bydate' ? $book['variation'].$book['date'] : $book['variation'];
+	if (array_key_exists($key, $array)) {
+		$array[$key]['count'] += 1;
+		$array[$key]['summ'] += $array[$key]['price'];
+		$array[$key]['to_bbt'] += $array[$key]['to_bbt'];
+		$array[$key]['to_command'] += $array[$key]['to_command'];
+		$array[$key]['to_partner'] += $array[$key]['to_partner'];
+		continue;
+	}
+
 	$db_shop->set_table('wp_posts');
 	$db_shop->set_where(['post_parent' => $book['product'], 'post_type' => 'attachment']);
 	$book['img'] = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['guid'];
@@ -14,26 +24,14 @@ foreach ($books as $book) {
 	$db_shop->set_table('wp_postmeta');
 	$db_shop->set_where(['post_id' => $book['variation'], 'meta_key' => '_price']);
 	$book['price'] = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['meta_value'];
+	$book['summ'] = $book['price'];
 
-	if ($sort == 'bybook')
-		$book['other'] = $book['author'];
+	$book['other'] = $book['author'];
+	$book['count'] = 1;
 
-	if ($sort == 'bybook') {
-		$total = 0;
-		$summ = unserialize($book['sold']);
-
-		if ($period == '`date` >= CURDATE()')
-			$date = date('Y-m-d');
-
-		foreach ($summ as $sum) {
-			if (strtotime($sum[0]) >= $date) $total += $sum[1];
-		}
-		$book['summ'] = $total;
-	}
-	$book['count'] = $book['summ'] / $book['price'];
-
-	$array[] = $book;
+	$array[$key] = $book;
 }
+$array = array_values($array);
 // pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = $page * $rows - $rows;

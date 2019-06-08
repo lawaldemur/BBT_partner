@@ -201,21 +201,24 @@ jQuery(document).ready(function($) {
 			$('.sortColumn_type').remove();
 			$('thead tr').prepend('<th class="books" data-column="date">Дата <span class="sort_upper sortColumn_type">&#9660;</span></th>');
 		}
+		$('thead th[data-column="date"]').click(function() {
+			updateSortColumn($(this));
+		});
 
 		uploadAllBooks();
 	});
 	// change sort column
-	$('thead th').click(function() {
-		if ($(this).data('column') != undefined) {
-			if ($(this).find('.sort_upper').length == 1) {
-				$(this).find('.sortColumn_type').remove();
-				$(this).append(' <span class="sort_down sortColumn_type">&#9650;</span>');
-			} else if ($(this).find('.sort_down').length == 1) {
-				$(this).find('.sortColumn_type').remove();
-				$(this).append(' <span class="sort_upper sortColumn_type">&#9660;</span>');
+	function updateSortColumn(th) {
+		if (th.data('column') != undefined) {
+			if (th.find('.sort_upper').length == 1) {
+				th.find('.sortColumn_type').remove();
+				th.append(' <span class="sort_down sortColumn_type">&#9650;</span>');
+			} else if (th.find('.sort_down').length == 1) {
+				th.find('.sortColumn_type').remove();
+				th.append(' <span class="sort_upper sortColumn_type">&#9660;</span>');
 			} else {
-				$(this).parent().find('.sortColumn_type').remove();
-				$(this).append(' <span class="sort_upper sortColumn_type">&#9660;</span>');
+				th.parent().find('.sortColumn_type').remove();
+				th.append(' <span class="sort_upper sortColumn_type">&#9660;</span>');
 			}
 
 			if ($('.books_or_children_row').hasClass('books'))
@@ -223,6 +226,9 @@ jQuery(document).ready(function($) {
 			else
 				uploadChildren();
 		}
+	}
+	$('thead th').click(function() {
+		updateSortColumn($(this));
 	});
 
 

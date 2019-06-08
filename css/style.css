@@ -3204,17 +3204,13 @@ table[data-position="partner"] tr > *:nth-child(1) {
 
 
 
-#users_table[data-position="client"][data-role="Команда"] tr > *:nth-child(2),
-#users_table[data-position="client"][data-role="Команда"] tr > *:nth-child(3),
-#users_table[data-position="client"][data-role="Команда"] tr > *:nth-child(4) {
+#users_table[data-position="client"][data-role="Команда"] tr > *:nth-child(2) {
 	display: none;
 }
 #users_table[data-position="client"][data-role="Команда"] tr > *:nth-child(1) {
 	width: 880px;
 }
-#users_table[data-position="client"][data-role="Партнер"] tr > *:nth-child(2),
-#users_table[data-position="client"][data-role="Партнер"] tr > *:nth-child(3),
-#users_table[data-position="client"][data-role="Партнер"] tr > *:nth-child(4) {
+#users_table[data-position="client"][data-role="Партнер"] tr > *:nth-child(2) {
 	display: none;
 }
 #users_table[data-position="client"][data-role="Партнер"] tr > *:nth-child(1) {

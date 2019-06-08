@@ -1,7 +1,7 @@
 <?php
 if ($role == 'command' || $role == 'partner') {
 	$db->set_where(['date' => $period, 'to_'.$role.'_id' => $id] + ($format == 'all' ? [] : ['format' => $format]));
-	$db->set_table($sort == 'bydate' ? 'analitic' : 'analitic_bybook');
+	$db->set_table('sold');
 	$books = $db->select('i' . ($format == 'all' ? '' : 's'));
 } else {
 	$db->set_where(['date' => $period, 'client' => $id] + ($format == 'all' ? [] : ['format' => $format]));
@@ -18,6 +18,16 @@ $pages = ceil($books->num_rows / $rows) + 1;
 $array = array();
 if ($books)
 foreach ($books as $book) {
+	$key = $sort == 'bydate' ? $book['variation'].$book['date'] : $book['variation'];
+	if (array_key_exists($key, $array)) {
+		$array[$key]['count'] += 1;
+		$array[$key]['summ'] += $array[$key]['price'];
+		$array[$key]['to_bbt'] += $array[$key]['to_bbt'];
+		$array[$key]['to_command'] += $array[$key]['to_command'];
+		$array[$key]['to_partner'] += $array[$key]['to_partner'];
+		continue;
+	}
+
 	$db_shop->set_table('wp_posts');
 	$db_shop->set_where(['post_parent' => $book['product'], 'post_type' => 'attachment']);
 
@@ -32,53 +42,14 @@ foreach ($books as $book) {
 	$db_shop->set_where(['post_id' => $book['variation'], 'meta_key' => '_price']);
 
 	$book['price'] = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['meta_value'];
+	$book['summ'] = $book['price'];
 
-	if ($sort == 'bybook' && $role != 'client') {
-		$total = 0;
-		$summ = unserialize($book['sold']);
+	$book['other'] = $book['author'];
+	$book['count'] = 1;
 
-		if ($period == '`date` >= CURDATE()')
-			$date = date('Y-m-d');
-
-		if ($summ)
-		foreach ($summ as $sum) {
-			if (strtotime($sum[0]) >= $date) $total += $sum[1];
-		}
-		$book['summ'] = $total;
-	}
-
-	$book['count'] = $book['summ'] / $book['price'];
-	if ($sort == 'bybook')
-		$book['other'] = $book['author'];
-
-	if ($role != 'command' && $role != 'partner') {
-		$db_shop->set_table('wp_posts');
-		$db_shop->set_where(['ID' => $book['product']]);
-		$book['name'] = $db_shop->select('i')->fetch_array(MYSQLI_ASSOC)['post_title'];
-
-		$db_shop->set_table('wp_postmeta');
-		$db_shop->set_where(['post_id' => $book['variation'], 'meta_key' => 'attribute_pa_writer']);
-		$book['other'] = $db_shop->select('is')->fetch_array(MYSQLI_ASSOC)['meta_value'];
-
-		$db_shop->set_table('wp_terms');
-		$db_shop->set_where(['slug' => $book['other']]);
-		$book['other'] = $db_shop->select('s')->fetch_array(MYSQLI_ASSOC)['name'];
-
-		if ($book['other'] == '') {
-			$db->set_table('analitic');
-			$db->set_where(['product' => $book['product']]);
-			$other = $db->select('i');
-			if ($other)
-				foreach ($other as $author) {
-					$book['other'] = $author['other'];
-					break;
-				}
-		}
-		
-	}
-
-	$array[] = $book;
+	$array[$key] = $book;
 }
+$array = array_values($array);
 
 for ($i=0; $i < count($array); $i++) { 
 	for ($x=$i + 1; $x < count($array); $x++) { 

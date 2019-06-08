@@ -20,10 +20,10 @@ if ($role == 'ББТ') {
 			$clients_arr[] = $client;
 	}
 	$count = count($clients_arr);
-} else {
+} elseif ($role == 'Партнер') {
 	// get clients of partner
 	$db->set_table('users');
-	$db->set_where(['id' => $id]);
+	$db->set_where(['id' => $user_id]);
 	$code = $db->select('i')->fetch_array(MYSQLI_ASSOC)['code'];
 
 	$db_shop->set_table('wp_users');
